@@ -733,7 +733,7 @@ public partial class MainWindow : Window
     // ==========================================
     private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isInitializingUi || LanguageCombo == null) return;
+        if (!IsLoaded || _isInitializingUi || LanguageCombo == null) return;
         string lang = LanguageCombo.SelectedIndex switch
         {
             1 => "en",
@@ -749,7 +749,7 @@ public partial class MainWindow : Window
 
     private void GeneralThemeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isInitializingUi || GeneralThemeCombo == null) return;
+        if (!IsLoaded || _isInitializingUi || GeneralThemeCombo == null) return;
         string theme = GeneralThemeCombo.SelectedIndex switch
         {
             1 => "Indigo",
@@ -849,7 +849,7 @@ public partial class MainWindow : Window
 
     private void ApplyLanguage(string lang)
     {
-        if (TxtSidebarSubtitle == null) return;
+        if (!IsLoaded || TxtSidebarSubtitle == null || TxtSettingsBehaviorTitle == null) return;
 
         TxtSidebarSubtitle.Text = GetLoc(lang, "Робочий простір", "Workspace", "Przestrzeń robocza");
         TxtSidebarMenuHeader.Text = GetLoc(lang, "МЕНЮ", "MENU", "MENU");
