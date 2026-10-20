@@ -16,7 +16,7 @@ public static class DefaultActionsProvider
                 Title = "У WebP",
                 Description = "Миттєва конвертація у легкий сучасний формат WebP",
                 IconKey = "🌐",
-                AccentColor = "#06B6D4",
+                AccentColor = "#38BDF8",
                 Category = ActionCategory.Convert,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Image },
                 Order = 1,
@@ -28,7 +28,7 @@ public static class DefaultActionsProvider
                 Title = "У PNG",
                 Description = "Конвертувати у формат без втрат з підтримкою прозорості",
                 IconKey = "🖼️",
-                AccentColor = "#3B82F6",
+                AccentColor = "#6366F1",
                 Category = ActionCategory.Convert,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Image },
                 Order = 2,
@@ -87,10 +87,10 @@ public static class DefaultActionsProvider
             new ActionItem
             {
                 Id = "doc_to_pdf",
-                Title = "Зберегти як PDF",
+                Title = "У PDF",
                 Description = "Швидко створити документ PDF із вибраного файлу",
                 IconKey = "📄",
-                AccentColor = "#EF4444",
+                AccentColor = "#F43F5E",
                 Category = ActionCategory.Convert,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Image, FileTypeCategory.Document },
                 Order = 7,
@@ -100,26 +100,14 @@ public static class DefaultActionsProvider
             // === System Actions ===
             new ActionItem
             {
-                Id = "system_shelf_add",
-                Title = "На поличку",
-                Description = "Закріпити файл на тимчасовій поличці для подальших дій",
-                IconKey = "📌",
-                AccentColor = "#F97316",
-                Category = ActionCategory.System,
-                SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Generic, FileTypeCategory.Image, FileTypeCategory.Video, FileTypeCategory.Audio, FileTypeCategory.Document, FileTypeCategory.Folder },
-                Order = 8,
-                IsEnabled = true
-            },
-            new ActionItem
-            {
                 Id = "system_copy_path",
                 Title = "Копіювати шлях",
                 Description = "Скопіювати повний системний шлях до файлу в буфер обміну",
                 IconKey = "📋",
-                AccentColor = "#6366F1",
+                AccentColor = "#8B5CF6",
                 Category = ActionCategory.System,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Generic, FileTypeCategory.Image, FileTypeCategory.Video, FileTypeCategory.Audio, FileTypeCategory.Document, FileTypeCategory.Folder },
-                Order = 9,
+                Order = 8,
                 IsEnabled = true
             },
             new ActionItem
@@ -131,7 +119,7 @@ public static class DefaultActionsProvider
                 AccentColor = "#14B8A6",
                 Category = ActionCategory.System,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Generic, FileTypeCategory.Image, FileTypeCategory.Video, FileTypeCategory.Audio, FileTypeCategory.Document, FileTypeCategory.Folder },
-                Order = 10,
+                Order = 9,
                 IsEnabled = true
             },
             new ActionItem
@@ -140,10 +128,10 @@ public static class DefaultActionsProvider
                 Title = "У Провіднику",
                 Description = "Відкрити батьківську папку у Windows Explorer",
                 IconKey = "📁",
-                AccentColor = "#0284C7",
+                AccentColor = "#3B82F6",
                 Category = ActionCategory.System,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Generic, FileTypeCategory.Image, FileTypeCategory.Video, FileTypeCategory.Audio, FileTypeCategory.Document, FileTypeCategory.Folder },
-                Order = 11,
+                Order = 10,
                 IsEnabled = true
             },
             new ActionItem
@@ -155,7 +143,7 @@ public static class DefaultActionsProvider
                 AccentColor = "#64748B",
                 Category = ActionCategory.System,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Generic, FileTypeCategory.Image, FileTypeCategory.Video, FileTypeCategory.Audio, FileTypeCategory.Document, FileTypeCategory.Folder },
-                Order = 12,
+                Order = 11,
                 IsEnabled = true
             }
         };

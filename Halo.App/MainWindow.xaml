@@ -9,940 +9,915 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        Foreground="{StaticResource OrbitTextPrimary}"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        Foreground="{DynamicResource OrbitTextPrimary}"
         FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
         PreviewKeyDown="Window_PreviewKeyDown">
 
-    <!-- Зовнішній контейнер з м'якою тінню та закругленими кутами (Стиль Orbit) -->
-    <Border Background="{StaticResource OrbitWindowBgBrush}"
-            BorderBrush="#2C2C38"
-            BorderThickness="1"
-            CornerRadius="18"
-            Margin="10">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="28" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.6" />
-        </Border.Effect>
+    <Grid Margin="10">
+        <!-- Фоновий шар тіні вікна (Окремий від контенту, щоб текст не розмивався!) -->
+        <Border Background="{DynamicResource OrbitWindowBgBrush}"
+                CornerRadius="18">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="24" ShadowDepth="5" Direction="270" Color="#000000" Opacity="0.55" />
+            </Border.Effect>
+        </Border>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="255" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <!-- Основний чіткий контейнер вікна (Без Effect, ідеальна чіткість ClearType!) -->
+        <Border Background="{DynamicResource OrbitWindowBgBrush}"
+                BorderBrush="{DynamicResource OrbitSubtleBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="18"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
 
-            <!-- ================================================================= -->
-            <!-- 1. ЛІВИЙ САЙДБАР (ВІЗУАЛЬНО ВІДДІЛЕНИЙ, СТИЛЬ "ORBIT")            -->
-            <!-- ================================================================= -->
-            <Border Grid.Column="0"
-                    Background="{StaticResource OrbitSidebarBgBrush}"
-                    BorderBrush="{StaticResource OrbitSidebarDividerBrush}"
-                    BorderThickness="0,0,1,0"
-                    CornerRadius="18,0,0,18"
-                    Padding="20,24">
-                <DockPanel>
-                    <!-- Логотип зверху зліва (Градієнтне кільце/ореол + назва Halo) -->
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="4,2,4,32" MouseDown="TitleBar_MouseDown" Background="Transparent">
-                        <Border Width="44" Height="44" CornerRadius="13" Background="#222030" BorderBrush="#35314D" BorderThickness="1" Margin="0,0,14,0">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="14" Color="#8B5CF6" Opacity="0.35" ShadowDepth="0" />
-                            </Border.Effect>
-                            <Ellipse Width="22" Height="22" Stroke="{StaticResource OrbitLogoGradient}" StrokeThickness="3.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Halo" FontSize="22" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                            <TextBlock Text="Робочий простір" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" Margin="0,1,0,0" />
-                        </StackPanel>
-                    </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                    <!-- Нижня міні-картка статусу фонового сервісу (без підтримки та версії) -->
-                    <Border DockPanel.Dock="Bottom"
-                            Background="#202029"
-                            BorderBrush="#2C2C3A"
-                            BorderThickness="1"
-                            CornerRadius="14"
-                            Padding="16,14"
-                            Margin="0,16,0,0">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                <Ellipse Width="8" Height="8" Fill="{StaticResource OrbitGreenLightBrush}" VerticalAlignment="Center" Margin="0,0,8,0">
-                                    <Ellipse.Effect>
-                                        <DropShadowEffect BlurRadius="8" Color="#10B981" Opacity="0.9" ShadowDepth="0" />
-                                    </Ellipse.Effect>
-                                </Ellipse>
-                                <TextBlock Text="Служба активна" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                            </StackPanel>
-                            <DockPanel>
-                                <TextBlock Text="Тригер:" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" VerticalAlignment="Center" />
-                                <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="6" Padding="8,2">
-                                    <TextBlock x:Name="SidebarHotkeyBadge" Text="Alt + Space" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
-                                </Border>
-                            </DockPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Меню навігації з повітряними відступами та акцентним маркером -->
-                    <StackPanel>
-                        <TextBlock Text="МЕНЮ" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource OrbitTextMuted}" Margin="10,0,0,8" />
-
-                        <RadioButton x:Name="NavMain" Style="{StaticResource OrbitSidebarItemStyle}" IsChecked="True" Checked="Nav_Checked">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource OrbitIconDashboard}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
-                                <TextBlock Text="Головна" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </RadioButton>
-
-                        <RadioButton x:Name="NavRadial" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource OrbitIconRadial}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
-                                <TextBlock Text="Кругові меню" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </RadioButton>
-
-                        <RadioButton x:Name="NavInput" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource OrbitIconKeys}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
-                                <TextBlock Text="Жести й клавіші" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </RadioButton>
-
-                        <RadioButton x:Name="NavPresets" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource OrbitIconTemplates}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
-                                <TextBlock Text="Шаблони" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </RadioButton>
-
-                        <RadioButton x:Name="NavFolders" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource OrbitIconFolders}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
-                                <TextBlock Text="Відстеження папок" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </RadioButton>
-
-                        <RadioButton x:Name="NavSettings" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource OrbitIconSettings}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
-                                <TextBlock Text="Налаштування" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </RadioButton>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-
-            <!-- ================================================================= -->
-            <!-- 2. ПРАВА ОСНОВНА РОБОЧА ОБЛАСТЬ (КАРТКОВИЙ ІНТЕРФЕЙС "ORBIT")     -->
-            <!-- ================================================================= -->
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <!-- ВЕРХНЯ ПАНЕЛЬ (Заголовок сторінки + Кнопки дій + Керування вікном) -->
-                <Border Grid.Row="0" Background="Transparent" Padding="34,22,24,14" MouseDown="TitleBar_MouseDown">
+                <!-- ================================================================= -->
+                <!-- 1. ЛІВИЙ САЙДБАР (ВІЗУАЛЬНО ВІДДІЛЕНИЙ, СТИЛЬ "ORBIT")            -->
+                <!-- ================================================================= -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource OrbitSidebarBgBrush}"
+                        BorderBrush="{DynamicResource OrbitSidebarDividerBrush}"
+                        BorderThickness="0,0,1,0"
+                        CornerRadius="18,0,0,18"
+                        Padding="20,24">
                     <DockPanel>
-                        <!-- Заголовок поточної вкладки та підпис -->
-                        <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
-                            <TextBlock x:Name="PageHeaderTitle" Text="Головна" FontSize="27" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                            <TextBlock x:Name="PageHeaderSubtitle" Text="Огляд активних інструментів, швидких дій та стану робочого простору" FontSize="13" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,3,0,0" />
+                        <!-- Логотип зверху зліва -->
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="4,2,4,32" MouseDown="TitleBar_MouseDown" Background="Transparent">
+                            <Grid Width="44" Height="44" Margin="0,0,14,0">
+                                <Border CornerRadius="13" Background="#222030" Effect="{StaticResource OrbitPurpleGlow}" />
+                                <Border CornerRadius="13" Background="#222030" BorderBrush="#463A6E" BorderThickness="1">
+                                    <Ellipse Width="22" Height="22" Stroke="{StaticResource OrbitLogoGradient}" StrokeThickness="3.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Halo" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                <TextBlock x:Name="TxtSidebarSubtitle" Text="Робочий простір" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" Margin="0,1,0,0" />
+                            </StackPanel>
                         </StackPanel>
 
-                        <!-- Кнопки праворуч -->
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                            <Button Content="📌  Поличка" Style="{StaticResource OrbitSecondaryButton}" Margin="0,0,10,0" Click="BtnOpenShelf_Click" />
-                            <Button Content="✦  Відкрити Halo" Style="{StaticResource OrbitPrimaryButton}" Margin="0,0,18,0" Click="BtnOpenHaloHere_Click" />
-
-                            <!-- Кнопки вікна -->
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Style="{StaticResource OrbitWindowCapBtn}" Click="BtnMinimize_Click" ToolTip="Згорнути">
-                                    <Path Data="{StaticResource OrbitIconMinimize}" Stroke="{StaticResource OrbitTextSecondary}" StrokeThickness="1.8" Width="11" Height="11" Stretch="Uniform" />
-                                </Button>
-                                <Button Style="{StaticResource OrbitWindowCloseBtn}" Click="BtnClose_Click" Margin="4,0,0,0" ToolTip="Закрити">
-                                    <Path Data="{StaticResource OrbitIconClose}" Stroke="{StaticResource OrbitTextSecondary}" StrokeThickness="1.8" Width="11" Height="11" Stretch="Uniform" />
-                                </Button>
+                        <!-- Нижня міні-картка статусу фонового сервісу -->
+                        <Border DockPanel.Dock="Bottom"
+                                Background="{DynamicResource OrbitCardBgBrush}"
+                                BorderBrush="{DynamicResource OrbitCardBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="14"
+                                Padding="16,14"
+                                Margin="0,16,0,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Ellipse x:Name="SidebarStatusDot" Width="8" Height="8" Fill="{StaticResource OrbitGreenLightBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBlock x:Name="TxtSidebarServiceStatus" Text="Служба активна" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                </StackPanel>
+                                <DockPanel>
+                                    <TextBlock x:Name="TxtSidebarTriggerLabel" Text="Тригер:" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" VerticalAlignment="Center" />
+                                    <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="6" Padding="8,2">
+                                        <TextBlock x:Name="SidebarHotkeyBadge" Text="Alt+Space" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                                    </Border>
+                                </DockPanel>
                             </StackPanel>
+                        </Border>
+
+                        <!-- Меню навігації (5 вкладок, без вкладки Шаблони) -->
+                        <StackPanel>
+                            <TextBlock x:Name="TxtSidebarMenuHeader" Text="МЕНЮ" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextMuted}" Margin="10,0,0,8" />
+
+                            <RadioButton x:Name="NavMain" Style="{StaticResource OrbitSidebarItemStyle}" IsChecked="True" Checked="Nav_Checked">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource OrbitIconDashboard}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="TxtNavMain" Text="Головна" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton x:Name="NavRadial" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource OrbitIconRadial}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="TxtNavRadial" Text="Кругові меню" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton x:Name="NavInput" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource OrbitIconKeys}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="TxtNavInput" Text="Жести й клавіші" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton x:Name="NavFolders" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource OrbitIconFolders}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.8" Width="17" Height="17" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="TxtNavFolders" Text="Відстеження папок" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton x:Name="NavSettings" Style="{StaticResource OrbitSidebarItemStyle}" Checked="Nav_Checked">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource OrbitIconSettings}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" StrokeThickness="1.7" StrokeLineJoin="Round" Width="18" Height="18" Stretch="Uniform" Margin="0,0,13,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="TxtNavSettings" Text="Налаштування" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
                         </StackPanel>
                     </DockPanel>
                 </Border>
 
-                <!-- КОНТЕНТ СТОРІНОК -->
-                <Grid Grid.Row="1" Margin="34,8,34,28">
+                <!-- ================================================================= -->
+                <!-- 2. ПРАВА ОСНОВНА РОБОЧА ОБЛАСТЬ (КАРТКОВИЙ ІНТЕРФЕЙС "ORBIT")     -->
+                <!-- ================================================================= -->
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                    <!-- ========================================================= -->
-                    <!-- ЕКРАН 1: "ГОЛОВНА" (ДАШБОРД У СТИЛІ "ORBIT")              -->
-                    <!-- ========================================================= -->
-                    <Grid x:Name="ScreenMain" Visibility="Visible">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
+                    <!-- ВЕРХНЯ ПАНЕЛЬ (Без кнопки Полички) -->
+                    <Border Grid.Row="0" Background="Transparent" Padding="32,22,24,14" MouseDown="TitleBar_MouseDown">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
+                                <TextBlock x:Name="PageHeaderTitle" Text="Головна" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                <TextBlock x:Name="PageHeaderSubtitle" Text="Огляд активних інструментів, швидких дій та стану робочого простору" FontSize="13" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,3,0,0" />
+                            </StackPanel>
 
-                        <!-- РЯД 1: 4 КВАДРАТНІ / ГОРИЗОНТАЛЬНІ КАРТКИ ПОКАЗНИКІВ (Як в Orbit) -->
-                        <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,22">
-                            <!-- Картка 1: Активні сектори (Фіолетовий акцент) -->
-                            <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="0,0,10,0" Padding="20,18" MouseLeftButtonDown="BtnJumpToRadial_Click">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,12">
-                                        <TextBlock Text="Активні дії" FontSize="13" FontWeight="Medium" Foreground="{StaticResource OrbitTextSecondary}" VerticalAlignment="Center" />
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitPurpleSoftBg}">
-                                            <TextBlock Text="🎯" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                    </DockPanel>
-                                    <TextBlock x:Name="StatActiveActions" Text="12" FontSize="30" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Доступно в радіальному меню" FontSize="11.5" Foreground="{StaticResource OrbitPurpleLightBrush}" Margin="0,4,0,0" />
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                <Button x:Name="BtnHeaderOpenHalo" Content="✦  Відкрити Halo" Style="{StaticResource OrbitPrimaryButton}" Margin="0,0,16,0" Click="BtnOpenHaloHere_Click" />
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource OrbitWindowCapBtn}" Click="BtnMinimize_Click" ToolTip="Згорнути">
+                                        <Path Data="{StaticResource OrbitIconMinimize}" Stroke="{DynamicResource OrbitTextSecondary}" StrokeThickness="1.8" Width="11" Height="11" Stretch="Uniform" />
+                                    </Button>
+                                    <Button Style="{StaticResource OrbitWindowCloseBtn}" Click="BtnClose_Click" Margin="4,0,0,0" ToolTip="Закрити">
+                                        <Path Data="{StaticResource OrbitIconClose}" Stroke="{DynamicResource OrbitTextSecondary}" StrokeThickness="1.8" Width="11" Height="11" Stretch="Uniform" />
+                                    </Button>
                                 </StackPanel>
-                            </Border>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
 
-                            <!-- Картка 2: Глобальний тригер (Синій/Блакитний акцент) -->
-                            <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="5,0,5,0" Padding="20,18" MouseLeftButtonDown="BtnJumpToInput_Click">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,12">
-                                        <TextBlock Text="Швидкий виклик" FontSize="13" FontWeight="Medium" Foreground="{StaticResource OrbitTextSecondary}" VerticalAlignment="Center" />
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitBlueSoftBg}">
-                                            <TextBlock Text="⌨️" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <!-- КОНТЕНТ СТОРІНОК -->
+                    <Grid Grid.Row="1" Margin="32,8,32,26">
+
+                        <!-- ========================================================= -->
+                        <!-- ЕКРАН 1: "ГОЛОВНА" (ДАШБОРД У СТИЛІ "ORBIT")              -->
+                        <!-- ========================================================= -->
+                        <Grid x:Name="ScreenMain" Visibility="Visible">
+                            <Grid.RenderTransform>
+                                <TranslateTransform X="0" Y="0" />
+                            </Grid.RenderTransform>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- РЯД 1: 4 ІНТЕРАКТИВНІ КАРТКИ ПОКАЗНИКІВ З АНІМАЦІЄЮ ПЕРЕХОДУ -->
+                            <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,20">
+                                <!-- Картка 1: Активні сектори -> Кругові меню -->
+                                <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="0,0,8,0" Padding="18,16" MouseLeftButtonDown="BtnJumpToRadial_Click">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock x:Name="TxtMetric1Title" Text="Активні дії" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource OrbitTextSecondary}" VerticalAlignment="Center" />
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="34" Height="34" CornerRadius="10" Background="{StaticResource OrbitPurpleSoftBg}">
+                                                <TextBlock Text="🎯" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                        </DockPanel>
+                                        <TextBlock x:Name="StatActiveActions" Text="11" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock x:Name="TxtMetric1Sub" Text="Налаштувати сектори →" FontSize="11.5" Foreground="{StaticResource OrbitPurpleLightBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Картка 2: Глобальний тригер -> Жести й клавіші -->
+                                <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="4,0,4,0" Padding="18,16" MouseLeftButtonDown="BtnJumpToInput_Click">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock x:Name="TxtMetric2Title" Text="Швидкий виклик" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource OrbitTextSecondary}" VerticalAlignment="Center" />
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="34" Height="34" CornerRadius="10" Background="{StaticResource OrbitBlueSoftBg}">
+                                                <TextBlock Text="⌨️" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                        </DockPanel>
+                                        <TextBlock x:Name="StatGlobalHotkey" Text="Alt+Space" FontSize="22" FontWeight="Bold" Foreground="{StaticResource OrbitCyanBrush}" Margin="0,4,0,2" />
+                                        <TextBlock x:Name="TxtMetric2Sub" Text="Жести та клавіші →" FontSize="11.5" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Картка 3: Відстеження папок -> Відстеження папок -->
+                                <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="4,0,4,0" Padding="18,16" MouseLeftButtonDown="BtnJumpToFolders_Click">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock x:Name="TxtMetric3Title" Text="Автоматизація" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource OrbitTextSecondary}" VerticalAlignment="Center" />
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="34" Height="34" CornerRadius="10" Background="{StaticResource OrbitAmberSoftBg}">
+                                                <TextBlock Text="📂" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                        </DockPanel>
+                                        <TextBlock x:Name="StatWatchedFolders" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock x:Name="TxtMetric3Sub" Text="Відстеження папок →" FontSize="11.5" Foreground="{StaticResource OrbitAmberLightBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Картка 4: Оформлення і система -> Налаштування -->
+                                <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="8,0,0,0" Padding="18,16" MouseLeftButtonDown="BtnJumpToSettings_Click">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock x:Name="TxtMetric4Title" Text="Тема та система" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource OrbitTextSecondary}" VerticalAlignment="Center" />
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="34" Height="34" CornerRadius="10" Background="{StaticResource OrbitGreenSoftBg}">
+                                                <TextBlock Text="🎨" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                        </DockPanel>
+                                        <TextBlock x:Name="StatCurrentTheme" Text="Orbit" FontSize="24" FontWeight="Bold" Foreground="{StaticResource OrbitGreenLightBrush}" Margin="0,2,0,2" />
+                                        <TextBlock x:Name="TxtMetric4Sub" Text="Відкрити налаштування →" FontSize="11.5" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+
+                            <!-- РЯД 2: ДВОКОЛОНКОВА КАРТКОВА СІТКА -->
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.35*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Ліва колонка: Інтерактивний хаб + 2x2 Картки операцій -->
+                                <Grid Grid.Column="0" Margin="0,0,10,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Головна інтерактивна картка (Без Effect на батьківському Border, кнопки чіткі і просторі) -->
+                                    <Border Grid.Row="0"
+                                            Background="{StaticResource OrbitHeroBannerGradient}"
+                                            BorderBrush="#4A3C75"
+                                            BorderThickness="1"
+                                            CornerRadius="16"
+                                            Padding="24,20"
+                                            Margin="0,0,0,16"
+                                            AllowDrop="True"
+                                            Drop="DropZone_Drop"
+                                            DragOver="DropZone_DragOver">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <Border Background="#3D3163" CornerRadius="8" Padding="10,4" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                                    <TextBlock x:Name="TxtHubBadge" Text="✦  ІНТЕРАКТИВНИЙ ХАБ" FontSize="10.5" FontWeight="Bold" Foreground="#C4B5FD" />
+                                                </Border>
+                                                <TextBlock x:Name="TxtHubTitle" Text="Миттєва робота з будь-яким файлом" FontSize="20" FontWeight="Bold" Foreground="#F2F3F7" />
+                                                <TextBlock x:Name="TxtHubDesc" Text="Перетягніть сюди зображення, відео чи документ або оберіть файл з диска, щоб відкрити радіальне меню дій."
+                                                           FontSize="12.5" Foreground="#B8BBE0" TextWrapping="Wrap" Margin="0,6,14,16" LineHeight="18" />
+
+                                                <WrapPanel Orientation="Horizontal">
+                                                    <Button x:Name="BtnHubPickFile" Content="📂  Вибрати файл..." Style="{StaticResource OrbitPrimaryButton}" Margin="0,0,10,6" Click="BtnPickFile_Click" />
+                                                    <Button x:Name="BtnHubTestMenu" Content="◎  Тест кругового меню" Style="{StaticResource OrbitSecondaryButton}" Margin="0,0,0,6" Click="BtnOpenHaloHere_Click" />
+                                                </WrapPanel>
+                                            </StackPanel>
+
+                                            <!-- Декоративне кільце Orbit справа -->
+                                            <Border Grid.Column="1" Width="96" Height="96" CornerRadius="48" Background="#1D1A2E" BorderBrush="#4C3D7A" BorderThickness="1.5" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                <Grid>
+                                                    <Ellipse Width="64" Height="64" Stroke="{StaticResource OrbitLogoGradient}" StrokeThickness="3.5" Opacity="0.9" />
+                                                    <TextBlock Text="◎" FontSize="24" FontWeight="Bold" Foreground="#A78BFA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 2x2 Картки популярних швидких операцій -->
+                                    <UniformGrid Grid.Row="1" Columns="2" Rows="2">
+                                        <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="15,13" Margin="0,0,7,7" MouseLeftButtonDown="BtnPickFile_Click">
+                                            <DockPanel>
+                                                <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitBlueSoftBg}" Margin="0,0,12,0">
+                                                    <TextBlock Text="🌐" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="Конвертація у WebP" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                    <TextBlock Text="Стиснення без втрати чіткості" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                </StackPanel>
+                                            </DockPanel>
                                         </Border>
-                                    </DockPanel>
-                                    <TextBlock x:Name="StatGlobalHotkey" Text="Alt+Space" FontSize="24" FontWeight="Bold" Foreground="{StaticResource OrbitCyanBrush}" Margin="0,4,0,2" />
-                                    <TextBlock Text="Глобальна комбінація" FontSize="11.5" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
 
-                            <!-- Картка 3: Шаблони (Смарагдовий акцент) -->
-                            <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="5,0,5,0" Padding="20,18" MouseLeftButtonDown="BtnJumpToPresets_Click">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,12">
-                                        <TextBlock Text="Шаблони дій" FontSize="13" FontWeight="Medium" Foreground="{StaticResource OrbitTextSecondary}" VerticalAlignment="Center" />
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitGreenSoftBg}">
-                                            <TextBlock Text="⚡" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="15,13" Margin="7,0,0,7" MouseLeftButtonDown="BtnPickFile_Click">
+                                            <DockPanel>
+                                                <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitPurpleSoftBg}" Margin="0,0,12,0">
+                                                    <TextBlock Text="🖤" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="Чорно-білий фільтр" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                    <TextBlock Text="Монохромна обробка фото" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                </StackPanel>
+                                            </DockPanel>
                                         </Border>
-                                    </DockPanel>
-                                    <TextBlock x:Name="StatPresetsCount" Text="3" FontSize="30" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Готові макроси обробки" FontSize="11.5" Foreground="{StaticResource OrbitGreenLightBrush}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
 
-                            <!-- Картка 4: Відстеження папок (Бурштиновий акцент) -->
-                            <Border Style="{StaticResource OrbitInteractiveCardStyle}" Margin="10,0,0,0" Padding="20,18" MouseLeftButtonDown="BtnJumpToFolders_Click">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,12">
-                                        <TextBlock Text="Автоматизація" FontSize="13" FontWeight="Medium" Foreground="{StaticResource OrbitTextSecondary}" VerticalAlignment="Center" />
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitAmberSoftBg}">
-                                            <TextBlock Text="📂" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="15,13" Margin="0,7,7,0" MouseLeftButtonDown="BtnPickFile_Click">
+                                            <DockPanel>
+                                                <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitGreenSoftBg}" Margin="0,0,12,0">
+                                                    <TextBlock Text="📐" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="Зменшити розмір 50%" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                    <TextBlock Text="Швидке масштабування" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                </StackPanel>
+                                            </DockPanel>
                                         </Border>
-                                    </DockPanel>
-                                    <TextBlock x:Name="StatWatchedFolders" Text="0" FontSize="30" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Активних правил папок" FontSize="11.5" Foreground="{StaticResource OrbitAmberLightBrush}" Margin="0,4,0,0" />
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
 
-                        <!-- РЯД 2: ДВОКОЛОНКОВА КАРТКОВА СІТКА (BENTO GRID) -->
-                        <Grid Grid.Row="1">
+                                        <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="15,13" Margin="7,7,0,0" MouseLeftButtonDown="BtnPickFile_Click">
+                                            <DockPanel>
+                                                <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitRoseSoftBg}" Margin="0,0,12,0">
+                                                    <TextBlock Text="📄" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="Зберегти в PDF" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                    <TextBlock Text="Документи та зображення" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                    </UniformGrid>
+                                </Grid>
+
+                                <!-- Права колонка: Картка профілів секторів за категоріями -->
+                                <Border Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,0" Padding="20">
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+                                            <StackPanel>
+                                                <TextBlock x:Name="TxtProfilesTitle" Text="Профілі кругового меню" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock x:Name="TxtProfilesSub" Text="Наповнення секторів за типами файлів" FontSize="12" Foreground="{DynamicResource OrbitTextMuted}" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
+                                                <TextBlock Text="Активні" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                                            </Border>
+                                        </DockPanel>
+
+                                        <Button x:Name="BtnConfigureSectors" DockPanel.Dock="Bottom" Content="Налаштувати сектори меню →" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Stretch" Click="BtnJumpToRadial_Click" Margin="0,10,0,0" />
+
+                                        <StackPanel>
+                                            <Border Background="{DynamicResource OrbitRecessedBgBrush}" CornerRadius="12" Padding="14,12" Margin="0,0,0,10" BorderBrush="{DynamicResource OrbitSubtleBorderBrush}" BorderThickness="1">
+                                                <DockPanel>
+                                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitBlueSoftBg}" Margin="0,0,12,0">
+                                                        <TextBlock Text="🖼️" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <Border DockPanel.Dock="Right" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="7" Padding="9,3" VerticalAlignment="Center">
+                                                        <TextBlock Text="Зображення" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitCyanBrush}" />
+                                                    </Border>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="Фото та графіка" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                        <TextBlock Text="WebP, PNG, JPG, Ресайз, Ч/Б" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+
+                                            <Border Background="{DynamicResource OrbitRecessedBgBrush}" CornerRadius="12" Padding="14,12" Margin="0,0,0,10" BorderBrush="{DynamicResource OrbitSubtleBorderBrush}" BorderThickness="1">
+                                                <DockPanel>
+                                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitGreenSoftBg}" Margin="0,0,12,0">
+                                                        <TextBlock Text="📄" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <Border DockPanel.Dock="Right" Background="{StaticResource OrbitGreenSoftBg}" CornerRadius="7" Padding="9,3" VerticalAlignment="Center">
+                                                        <TextBlock Text="Документи" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitGreenLightBrush}" />
+                                                    </Border>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="Документи та PDF" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                        <TextBlock Text="Конвертація в PDF, Копіювання шляху" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+
+                                            <Border Background="{DynamicResource OrbitRecessedBgBrush}" CornerRadius="12" Padding="14,12" Margin="0,0,0,4" BorderBrush="{DynamicResource OrbitSubtleBorderBrush}" BorderThickness="1">
+                                                <DockPanel>
+                                                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitPurpleSoftBg}" Margin="0,0,12,0">
+                                                        <TextBlock Text="💻" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <Border DockPanel.Dock="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="7" Padding="9,3" VerticalAlignment="Center">
+                                                        <TextBlock Text="Система" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                                                    </Border>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="Системні операції" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                        <TextBlock Text="Термінал, Провідник, Буфер обміну" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+
+                        <!-- ========================================================= -->
+                        <!-- ЕКРАН 2: "КРУГОВІ МЕНЮ" (БЕЗ НАКЛАДАННЯ ТЕКСТУ Й КНОПОК)   -->
+                        <!-- ========================================================= -->
+                        <Grid x:Name="ScreenRadial" Visibility="Collapsed">
+                            <Grid.RenderTransform>
+                                <TranslateTransform X="0" Y="0" />
+                            </Grid.RenderTransform>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1.35*" />
-                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="225" />
+                                <ColumnDefinition Width="330" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Ліва колонка: Картка швидкої обробки + Міні-картки інструментів -->
-                            <Grid Grid.Column="0" Margin="0,0,11,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                            <!-- Колонка 1: Картка категорій файлів (Гнучка сітка без фіксованої ширини!) -->
+                            <Border Grid.Column="0" Style="{StaticResource OrbitCardStyle}" Padding="14" Margin="0,0,14,0">
+                                <StackPanel>
+                                    <TextBlock Text="КАТЕГОРІЇ ФАЙЛІВ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource OrbitTextMuted}" Margin="8,4,8,10" />
+                                    <ListBox x:Name="RadialCategoriesList"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             HorizontalContentAlignment="Stretch"
+                                             SelectionChanged="RadialCategoriesList_SelectionChanged">
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem">
+                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="ListBoxItem">
+                                                            <Border x:Name="CatBorder" Background="Transparent" CornerRadius="11" Padding="12,10" Margin="0,3" Cursor="Hand" BorderBrush="Transparent" BorderThickness="1">
+                                                                <ContentPresenter HorizontalAlignment="Stretch" />
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="CatBorder" Property="Background" Value="{DynamicResource OrbitCardHoverBgBrush}" />
+                                                                </Trigger>
+                                                                <Trigger Property="IsSelected" Value="True">
+                                                                    <Setter TargetName="CatBorder" Property="Background" Value="{StaticResource OrbitNavActiveBgGradient}" />
+                                                                    <Setter TargetName="CatBorder" Property="BorderBrush" Value="#54428E" />
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
 
-                                <!-- Головна інтерактивна картка швидкої дії (Drop & Launch) -->
-                                <Border Grid.Row="0"
-                                        Background="{StaticResource OrbitHeroBannerGradient}"
-                                        BorderBrush="#463A6E"
-                                        BorderThickness="1"
-                                        CornerRadius="16"
-                                        Padding="26,22"
-                                        Margin="0,0,0,18"
-                                        Effect="{StaticResource OrbitCardShadow}"
-                                        AllowDrop="True"
-                                        Drop="DropZone_Drop"
-                                        DragOver="DropZone_DragOver">
-                                    <Grid>
+                                        <ListBoxItem IsSelected="True" Tag="Image">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="🖼️  Зображення" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Border Grid.Column="1" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="7" Padding="7,2" Margin="6,0,0,0">
+                                                    <TextBlock x:Name="BadgeImageCount" Text="10" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitCyanBrush}" />
+                                                </Border>
+                                            </Grid>
+                                        </ListBoxItem>
+
+                                        <ListBoxItem Tag="Document">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="📄  Документи" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Border Grid.Column="1" Background="{StaticResource OrbitGreenSoftBg}" CornerRadius="7" Padding="7,2" Margin="6,0,0,0">
+                                                    <TextBlock x:Name="BadgeDocCount" Text="5" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitGreenLightBrush}" />
+                                                </Border>
+                                            </Grid>
+                                        </ListBoxItem>
+
+                                        <ListBoxItem Tag="Video">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="🎬  Відео" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Border Grid.Column="1" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="7" Padding="7,2" Margin="6,0,0,0">
+                                                    <TextBlock x:Name="BadgeVideoCount" Text="4" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                                                </Border>
+                                            </Grid>
+                                        </ListBoxItem>
+
+                                        <ListBoxItem Tag="Audio">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="🎵  Аудіо" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Border Grid.Column="1" Background="{StaticResource OrbitAmberSoftBg}" CornerRadius="7" Padding="7,2" Margin="6,0,0,0">
+                                                    <TextBlock x:Name="BadgeAudioCount" Text="4" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitAmberLightBrush}" />
+                                                </Border>
+                                            </Grid>
+                                        </ListBoxItem>
+
+                                        <ListBoxItem Tag="Generic">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="📦  Усі файли" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Border Grid.Column="1" Background="{DynamicResource OrbitRecessedBgBrush}" CornerRadius="7" Padding="7,2" Margin="6,0,0,0">
+                                                    <TextBlock x:Name="BadgeGenericCount" Text="4" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource OrbitTextSecondary}" />
+                                                </Border>
+                                            </Grid>
+                                        </ListBoxItem>
+                                    </ListBox>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Колонка 2: Інтерактивний диск у фіксованій пропорції -->
+                            <Border Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Padding="16" Margin="0,0,14,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="МАКЕТ РАДІАЛЬНОГО КОЛА" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource OrbitTextMuted}" HorizontalAlignment="Center" Margin="0,2,0,6" />
+                                    <Viewbox Grid.Row="1" Stretch="Uniform" MaxWidth="295" MaxHeight="320" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <controls:RadialDiscControl x:Name="PreviewRadialDisc" />
+                                    </Viewbox>
+                                    <Button Grid.Row="2" Content="✦  Протестувати меню на екрані" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Stretch" Margin="0,8,0,0" Click="BtnOpenHaloHere_Click" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Колонка 3: Картковий список секторів з компактними перемикачами (34x18) -->
+                            <Border Grid.Column="2" Style="{StaticResource OrbitCardStyle}" Padding="18">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0" Margin="2,0,4,12">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <Border Background="#3D3163" CornerRadius="8" Padding="10,4" HorizontalAlignment="Left" Margin="0,0,0,12">
-                                                <TextBlock Text="✦  ІНТЕРАКТИВНИЙ ХАБ" FontSize="10.5" FontWeight="Bold" Foreground="#C4B5FD" />
-                                            </Border>
-                                            <TextBlock Text="Миттєва робота з будь-яким файлом" FontSize="21" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Перетягніть сюди зображення, відео чи документ або оберіть файл з диска, щоб відкрити радіальне меню дій."
-                                                       FontSize="13" Foreground="{StaticResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,8,16,20" LineHeight="19" />
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <Button Content="📂  Вибрати файл..." Style="{StaticResource OrbitPrimaryButton}" Margin="0,0,12,0" Click="BtnPickFile_Click" />
-                                                <Button Content="◎  Тест кругового меню" Style="{StaticResource OrbitSecondaryButton}" Click="BtnOpenHaloHere_Click" />
-                                            </StackPanel>
-                                        </StackPanel>
-
-                                        <!-- Декоративне кільце Orbit справа -->
-                                        <Border Grid.Column="1" Width="116" Height="116" CornerRadius="58" Background="#1D1A2E" BorderBrush="#4C3D7A" BorderThickness="1.5" VerticalAlignment="Center" Margin="10,0,0,0">
-                                            <Grid>
-                                                <Ellipse Width="78" Height="78" Stroke="{StaticResource OrbitLogoGradient}" StrokeThickness="4" Opacity="0.85" />
-                                                <TextBlock Text="🎯" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Grid>
-                                        </Border>
+                                        <TextBlock Grid.Column="0" Text="СЕКТОРИ ОБРАНОЇ КАТЕГОРІЇ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource OrbitTextMuted}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="Вкл / Викл" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" VerticalAlignment="Center" />
                                     </Grid>
-                                </Border>
 
-                                <!-- 2x2 Картки популярних швидких операцій -->
-                                <UniformGrid Grid.Row="1" Columns="2" Rows="2">
-                                    <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="16,14" Margin="0,0,8,8" MouseLeftButtonDown="BtnPickFile_Click">
-                                        <DockPanel>
-                                            <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource OrbitBlueSoftBg}" Margin="0,0,12,0">
-                                                <TextBlock Text="🌐" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Конвертація у WebP" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                <TextBlock Text="Стиснення без втрати чіткості" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
+                                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl x:Name="RadialActionsItemsControl">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="{DynamicResource OrbitRecessedBgBrush}"
+                                                            BorderBrush="{DynamicResource OrbitSubtleBorderBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="12"
+                                                            Padding="12,10"
+                                                            Margin="0,0,8,8">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
 
-                                    <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="16,14" Margin="8,0,0,8" MouseLeftButtonDown="BtnPickFile_Click">
-                                        <DockPanel>
-                                            <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource OrbitPurpleSoftBg}" Margin="0,0,12,0">
-                                                <TextBlock Text="🖤" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Чорно-білий фільтр" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                <TextBlock Text="Монохромна обробка фото" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
+                                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="9" Background="{DynamicResource OrbitCardBgBrush}" BorderBrush="{DynamicResource OrbitCardBorderBrush}" BorderThickness="1" Margin="0,0,12,0">
+                                                                <TextBlock Text="{Binding IconKey}" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            </Border>
 
-                                    <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="16,14" Margin="0,8,8,0" MouseLeftButtonDown="BtnPickFile_Click">
-                                        <DockPanel>
-                                            <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource OrbitGreenSoftBg}" Margin="0,0,12,0">
-                                                <TextBlock Text="📐" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Зменшити розмір 50%" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                <TextBlock Text="Швидке масштабування" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
+                                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+                                                            </StackPanel>
 
-                                    <Border Style="{StaticResource OrbitInteractiveCardStyle}" Padding="16,14" Margin="8,8,0,0" MouseLeftButtonDown="BtnPickFile_Click">
-                                        <DockPanel>
-                                            <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource OrbitRoseSoftBg}" Margin="0,0,12,0">
-                                                <TextBlock Text="📄" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Зберегти в PDF" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                <TextBlock Text="Документи та зображення" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </Grid>
+                                                            <CheckBox Grid.Column="2"
+                                                                      IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                                                      Style="{StaticResource OrbitToggleSwitch}"
+                                                                      Click="RadialActionToggle_Click"
+                                                                      Tag="{Binding}"
+                                                                      VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Border>
+                        </Grid>
 
-                            <!-- Права колонка: Картка профілів секторів за категоріями -->
-                            <Border Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Margin="11,0,0,0" Padding="22">
-                                <DockPanel>
-                                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                                        <StackPanel>
-                                            <TextBlock Text="Профілі кругового меню" FontSize="16" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Наповнення секторів за типами файлів" FontSize="12" Foreground="{StaticResource OrbitTextMuted}" Margin="0,2,0,0" />
-                                        </StackPanel>
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
-                                            <TextBlock Text="Активні" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                        <!-- ========================================================= -->
+                        <!-- ЕКРАН 3: "ЖЕСТИ Й КЛАВІШІ" (З ХОТКЕЄМ ІГРОВОГО РЕЖИМУ Й СКИДАННЯМ) -->
+                        <!-- ========================================================= -->
+                        <Grid x:Name="ScreenInput" Visibility="Collapsed">
+                            <Grid.RenderTransform>
+                                <TranslateTransform X="0" Y="0" />
+                            </Grid.RenderTransform>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.15*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Картка 1 (Ліва верхня): Комбінація виклику Halo -->
+                            <Border x:Name="HotkeyRecorderCard" Grid.Row="0" Grid.Column="0" Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,16" Padding="22,20">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,12">
+                                        <Border Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="8" Padding="10,4">
+                                            <TextBlock Text="⌨️  ОСНОВНИЙ ТРИГЕР" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
                                         </Border>
+                                        <TextBlock Text="Глобальне перехоплення" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" />
                                     </DockPanel>
 
-                                    <Button DockPanel.Dock="Bottom" Content="Налаштувати сектори меню →" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Stretch" Click="BtnJumpToRadial_Click" Margin="0,12,0,0" />
+                                    <TextBlock Text="Комбінація виклику Halo" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                    <TextBlock x:Name="HotkeyRecorderHint" Text="Натисніть кнопку запису нижче, а потім затисніть бажані клавіші на клавіатурі."
+                                               FontSize="12.5" Foreground="{DynamicResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,4,0,14" />
 
-                                    <!-- Внутрішні міні-картки категорій -->
-                                    <StackPanel>
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="12" Padding="14,12" Margin="0,0,0,10" BorderBrush="#2C2C38" BorderThickness="1">
-                                            <DockPanel>
-                                                <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitBlueSoftBg}" Margin="0,0,12,0">
-                                                    <TextBlock Text="🖼️" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                </Border>
-                                                <Border DockPanel.Dock="Right" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="7" Padding="9,3" VerticalAlignment="Center">
-                                                    <TextBlock Text="6 секторів" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitCyanBrush}" />
-                                                </Border>
-                                                <StackPanel VerticalAlignment="Center">
-                                                    <TextBlock Text="Зображення" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                    <TextBlock Text="WebP, PNG, JPG, Ресайз, Ч/Б" FontSize="11" Foreground="{StaticResource OrbitTextMuted}" />
-                                                </StackPanel>
-                                            </DockPanel>
-                                        </Border>
+                                    <Border Background="{DynamicResource OrbitRecessedBgBrush}" BorderBrush="{DynamicResource OrbitCardBorderBrush}" BorderThickness="1.5" CornerRadius="12" Padding="16,12" Margin="0,0,0,14">
+                                        <DockPanel>
+                                            <TextBlock Text="Поточний хоткей:" FontSize="12.5" Foreground="{DynamicResource OrbitTextSecondary}" VerticalAlignment="Center" />
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitNavActiveBgGradient}" BorderBrush="#63539E" BorderThickness="1.5" CornerRadius="9" Padding="14,5">
+                                                <TextBlock x:Name="HotkeyRecorderStatusText" Text="Alt+Space" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" />
+                                            </Border>
+                                        </DockPanel>
+                                    </Border>
 
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="12" Padding="14,12" Margin="0,0,0,10" BorderBrush="#2C2C38" BorderThickness="1">
-                                            <DockPanel>
-                                                <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitGreenSoftBg}" Margin="0,0,12,0">
-                                                    <TextBlock Text="📄" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                </Border>
-                                                <Border DockPanel.Dock="Right" Background="{StaticResource OrbitGreenSoftBg}" CornerRadius="7" Padding="9,3" VerticalAlignment="Center">
-                                                    <TextBlock Text="5 секторів" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitGreenLightBrush}" />
-                                                </Border>
-                                                <StackPanel VerticalAlignment="Center">
-                                                    <TextBlock Text="Документи та PDF" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                    <TextBlock Text="Конвертація в PDF, Поличка, Шлях" FontSize="11" Foreground="{StaticResource OrbitTextMuted}" />
-                                                </StackPanel>
-                                            </DockPanel>
-                                        </Border>
+                                    <Button x:Name="BtnRecordHotkey" Content="⏺️  Записати комбінацію з клавіатури" Style="{StaticResource OrbitPrimaryButton}" HorizontalAlignment="Left" Click="BtnRecordHotkey_Click" />
+                                </StackPanel>
+                            </Border>
 
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="12" Padding="14,12" Margin="0,0,0,4" BorderBrush="#2C2C38" BorderThickness="1">
-                                            <DockPanel>
-                                                <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitPurpleSoftBg}" Margin="0,0,12,0">
-                                                    <TextBlock Text="💻" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                </Border>
-                                                <Border DockPanel.Dock="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="7" Padding="9,3" VerticalAlignment="Center">
-                                                    <TextBlock Text="5 секторів" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
-                                                </Border>
-                                                <StackPanel VerticalAlignment="Center">
-                                                    <TextBlock Text="Системні операції" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                    <TextBlock Text="Термінал, Провідник, Буфер обміну" FontSize="11" Foreground="{StaticResource OrbitTextMuted}" />
-                                                </StackPanel>
-                                            </DockPanel>
-                                        </Border>
+                            <!-- Картка 2 (Права верхня): Ігровий режим + комбінація клавіш для Ігрового режиму -->
+                            <Border x:Name="GameModeRecorderCard" Grid.Row="0" Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,16" Padding="22,20">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,10">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource OrbitRoseSoftBg}" Margin="0,0,10,0">
+                                                <TextBlock Text="🎮" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="Ігровий режим (Тиша)" FontSize="16.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock Text="Пауза всіх тригерів у іграх" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <CheckBox x:Name="CheckPauseGestures" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" Click="CheckPauseGestures_Click" />
+                                    </DockPanel>
+
+                                    <TextBlock x:Name="GameModeRecorderHint" Text="Ви можете вмикати та вимикати Ігровий режим будь-коли гарячою комбінацією клавіш:"
+                                               FontSize="12" Foreground="{DynamicResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,4,0,12" />
+
+                                    <Border Background="{DynamicResource OrbitRecessedBgBrush}" BorderBrush="{DynamicResource OrbitCardBorderBrush}" BorderThickness="1.5" CornerRadius="12" Padding="14,10" Margin="0,0,0,14">
+                                        <DockPanel>
+                                            <TextBlock Text="Хоткей ігрового режиму:" FontSize="12" Foreground="{DynamicResource OrbitTextSecondary}" VerticalAlignment="Center" />
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitRoseSoftBg}" BorderBrush="#F43F5E" BorderThickness="1" CornerRadius="8" Padding="12,4">
+                                                <TextBlock x:Name="GameModeHotkeyStatusText" Text="Alt+G" FontSize="14.5" FontWeight="Bold" Foreground="#FDA4AF" />
+                                            </Border>
+                                        </DockPanel>
+                                    </Border>
+
+                                    <Button x:Name="BtnRecordGameModeHotkey" Content="⏺️  Записати хоткей ігрового режиму" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Left" Click="BtnRecordGameModeHotkey_Click" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Картка 3 (Ліва середня): Жест струшування (Shake) -->
+                            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,16" Padding="20,18">
+                                <DockPanel>
+                                    <Border Width="42" Height="42" CornerRadius="11" Background="{StaticResource OrbitBlueSoftBg}" Margin="0,0,14,0" VerticalAlignment="Center">
+                                        <TextBlock Text="👋" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <CheckBox x:Name="ToggleShakeGesture" IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" VerticalAlignment="Center" Click="ToggleShakeGesture_Click" />
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="Струшування мишею (Shake)" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock Text="Швидко потрусіть курсор вліво-вправо, щоб викликати радіальне меню для файлу" FontSize="12" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,3,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
+                                </DockPanel>
+                            </Border>
+
+                            <!-- Картка 4 (Права середня): Середня кнопка миші -->
+                            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,16" Padding="20,18">
+                                <DockPanel>
+                                    <Border Width="42" Height="42" CornerRadius="11" Background="{StaticResource OrbitGreenSoftBg}" Margin="0,0,14,0" VerticalAlignment="Center">
+                                        <TextBlock Text="🖱️" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <CheckBox x:Name="ToggleMiddleMouse" IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" VerticalAlignment="Center" Click="ToggleMiddleMouse_Click" />
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="Клік коліщатком миші" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock Text="Виклик радіального меню натисканням середньої кнопки миші" FontSize="12" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+
+                            <!-- Картка 5 (Нижня панель скидання до стандартних налаштувань) -->
+                            <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource OrbitCardStyle}" Padding="20,14">
+                                <DockPanel>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Скидання налаштувань керування" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock Text="Повернути стандартні комбінації (Alt+Space та Alt+G) і увімкнути всі жести миші" FontSize="12" Foreground="{DynamicResource OrbitTextMuted}" Margin="0,2,0,0" />
+                                    </StackPanel>
+                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="↺  Скинути до стандартних налаштувань" Style="{StaticResource OrbitSecondaryButton}" Click="BtnResetTriggers_Click" />
                                 </DockPanel>
                             </Border>
                         </Grid>
-                    </Grid>
 
-                    <!-- ========================================================= -->
-                    <!-- ЕКРАН 2: "КРУГОВІ МЕНЮ" (3 КАРТКОВІ КОЛОНКИ ORBIT)        -->
-                    <!-- ========================================================= -->
-                    <Grid x:Name="ScreenRadial" Visibility="Collapsed">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="230" />
-                            <ColumnDefinition Width="345" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                        <!-- ========================================================= -->
+                        <!-- ЕКРАН 4: "ВІДСТЕЖЕННЯ ПАПОК" (АВТОМАТИЗАЦІЯ З ПОЯСНЕННЯМ)   -->
+                        <!-- ========================================================= -->
+                        <Grid x:Name="ScreenFolders" Visibility="Collapsed">
+                            <Grid.RenderTransform>
+                                <TranslateTransform X="0" Y="0" />
+                            </Grid.RenderTransform>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                        <!-- Колонка 1: Картка категорій файлів -->
-                        <Border Grid.Column="0" Style="{StaticResource OrbitCardStyle}" Padding="14" Margin="0,0,16,0">
-                            <StackPanel>
-                                <TextBlock Text="КАТЕГОРІЇ ФАЙЛІВ" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitTextMuted}" Margin="8,4,8,12" />
-                                <ListBox x:Name="RadialCategoriesList" Background="Transparent" BorderThickness="0" SelectionChanged="RadialCategoriesList_SelectionChanged">
-                                    <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListBoxItem">
-                                                        <Border x:Name="CatBorder" Background="Transparent" CornerRadius="11" Padding="12,11" Margin="0,3" Cursor="Hand" BorderBrush="Transparent" BorderThickness="1">
-                                                            <ContentPresenter />
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="CatBorder" Property="Background" Value="#21212B" />
-                                                            </Trigger>
-                                                            <Trigger Property="IsSelected" Value="True">
-                                                                <Setter TargetName="CatBorder" Property="Background" Value="{StaticResource OrbitNavActiveBgGradient}" />
-                                                                <Setter TargetName="CatBorder" Property="BorderBrush" Value="#524382" />
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ListBox.ItemContainerStyle>
-
-                                    <ListBoxItem IsSelected="True" Tag="Image">
-                                        <DockPanel Width="172">
-                                            <TextBlock Text="🖼️   Зображення" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" VerticalAlignment="Center" />
-                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="8" Padding="8,2">
-                                                <TextBlock x:Name="BadgeImageCount" Text="6" FontSize="11.5" FontWeight="Bold" Foreground="{StaticResource OrbitCyanBrush}" />
-                                            </Border>
-                                        </DockPanel>
-                                    </ListBoxItem>
-
-                                    <ListBoxItem Tag="Document">
-                                        <DockPanel Width="172">
-                                            <TextBlock Text="📄   Документи" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" VerticalAlignment="Center" />
-                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitGreenSoftBg}" CornerRadius="8" Padding="8,2">
-                                                <TextBlock x:Name="BadgeDocCount" Text="5" FontSize="11.5" FontWeight="Bold" Foreground="{StaticResource OrbitGreenLightBrush}" />
-                                            </Border>
-                                        </DockPanel>
-                                    </ListBoxItem>
-
-                                    <ListBoxItem Tag="Video">
-                                        <DockPanel Width="172">
-                                            <TextBlock Text="🎬   Відео" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" VerticalAlignment="Center" />
-                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="8" Padding="8,2">
-                                                <TextBlock x:Name="BadgeVideoCount" Text="4" FontSize="11.5" FontWeight="Bold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
-                                            </Border>
-                                        </DockPanel>
-                                    </ListBoxItem>
-
-                                    <ListBoxItem Tag="Audio">
-                                        <DockPanel Width="172">
-                                            <TextBlock Text="🎵   Аудіо" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" VerticalAlignment="Center" />
-                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitAmberSoftBg}" CornerRadius="8" Padding="8,2">
-                                                <TextBlock x:Name="BadgeAudioCount" Text="4" FontSize="11.5" FontWeight="Bold" Foreground="{StaticResource OrbitAmberLightBrush}" />
-                                            </Border>
-                                        </DockPanel>
-                                    </ListBoxItem>
-
-                                    <ListBoxItem Tag="Generic">
-                                        <DockPanel Width="172">
-                                            <TextBlock Text="📦   Усі файли" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" VerticalAlignment="Center" />
-                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="#1F1F29" CornerRadius="8" Padding="8,2">
-                                                <TextBlock x:Name="BadgeGenericCount" Text="5" FontSize="11.5" FontWeight="Bold" Foreground="{StaticResource OrbitTextSecondary}" />
-                                            </Border>
-                                        </DockPanel>
-                                    </ListBoxItem>
-                                </ListBox>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Колонка 2: Інтерактивний диск у фіксованій пропорції (Не деформується!) -->
-                        <Border Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Padding="16" Margin="0,0,16,0">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="МАКЕТ РАДІАЛЬНОГО КОЛА" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitTextMuted}" HorizontalAlignment="Center" Margin="0,2,0,8" />
-                                <Viewbox Grid.Row="1" Stretch="Uniform" MaxWidth="310" MaxHeight="325" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <controls:RadialDiscControl x:Name="PreviewRadialDisc" />
-                                </Viewbox>
-                            </Grid>
-                        </Border>
-
-                        <!-- Колонка 3: Картковий список секторів з перемикачами Orbit -->
-                        <Border Grid.Column="2" Style="{StaticResource OrbitCardStyle}" Padding="18">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-
-                                <DockPanel Grid.Row="0" Margin="2,0,2,14">
-                                    <TextBlock Text="ДОСТУПНІ СЕКТОРИ ДІЙ" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitTextMuted}" VerticalAlignment="Center" />
-                                    <TextBlock Text="Увімкніть потрібні" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
-                                </DockPanel>
-
-                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                                    <ItemsControl x:Name="RadialActionsItemsControl">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Background="{StaticResource OrbitRecessedBgBrush}"
-                                                        BorderBrush="#2F2F3D"
-                                                        BorderThickness="1"
-                                                        CornerRadius="13"
-                                                        Padding="14,12"
-                                                        Margin="0,0,6,10">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                        </Grid.ColumnDefinitions>
-
-                                                        <Border Grid.Column="0" Width="38" Height="38" CornerRadius="10" Background="#262633" BorderBrush="#363648" BorderThickness="1" Margin="0,0,12,0">
-                                                            <TextBlock Text="{Binding IconKey}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        </Border>
-
-                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Title}" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                            <TextBlock Text="{Binding Description}" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" TextTrimming="CharacterEllipsis" MaxWidth="200" Margin="0,2,0,0" />
-                                                        </StackPanel>
-
-                                                        <CheckBox Grid.Column="2"
-                                                                  IsChecked="{Binding IsEnabled, Mode=TwoWay}"
-                                                                  Style="{StaticResource OrbitToggleSwitch}"
-                                                                  Click="RadialActionToggle_Click"
-                                                                  Tag="{Binding}"
-                                                                  VerticalAlignment="Center" />
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-                    </Grid>
-
-                    <!-- ========================================================= -->
-                    <!-- ЕКРАН 3: "ЖЕСТИ Й КЛАВІШІ" (КАРТКОВА СІТКА ORBIT)          -->
-                    <!-- ========================================================= -->
-                    <Grid x:Name="ScreenInput" Visibility="Collapsed">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.2*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Картка 1 (Ліва велика): Інтерактивний рекордер гарячих клавіш -->
-                        <Border x:Name="HotkeyRecorderCard" Grid.Row="0" Grid.Column="0" Style="{StaticResource OrbitCardStyle}" Margin="0,0,11,20" Padding="26,24">
-                            <StackPanel>
-                                <DockPanel Margin="0,0,0,16">
-                                    <Border Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="8" Padding="10,4">
-                                        <TextBlock Text="⌨️  СИСТЕМНИЙ ТРИГЕР" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                            <!-- Інформаційна картка: Що робить відстеження папок -->
+                            <Border Grid.Row="0" Background="{StaticResource OrbitHeroBannerGradient}" BorderBrush="#4A3C75" BorderThickness="1" CornerRadius="14" Padding="18,14" Margin="0,0,0,14">
+                                <DockPanel>
+                                    <Border Width="38" Height="38" CornerRadius="10" Background="#3D3163" Margin="0,0,14,0" VerticalAlignment="Center">
+                                        <TextBlock Text="💡" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
-                                    <TextBlock Text="Миттєве перехоплення" FontSize="12" Foreground="{StaticResource OrbitTextMuted}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                                </DockPanel>
-
-                                <TextBlock Text="Комбінація виклику Halo" FontSize="19" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                <TextBlock x:Name="HotkeyRecorderHint" Text="Натисніть кнопку запису нижче, а потім затисніть бажані клавіші на клавіатурі."
-                                           FontSize="13" Foreground="{StaticResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,6,0,20" />
-
-                                <!-- Блок клавіатурної капсули -->
-                                <Border Background="{StaticResource OrbitRecessedBgBrush}" BorderBrush="#38384A" BorderThickness="1.5" CornerRadius="14" Padding="20,16" Margin="0,0,0,20">
-                                    <DockPanel>
-                                        <TextBlock Text="Поточний хоткей:" FontSize="13" Foreground="{StaticResource OrbitTextSecondary}" VerticalAlignment="Center" />
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource OrbitNavActiveBgGradient}" BorderBrush="#63539E" BorderThickness="1.5" CornerRadius="10" Padding="16,7">
-                                            <TextBlock x:Name="HotkeyRecorderStatusText" Text="Alt+Space" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" />
-                                        </Border>
-                                    </DockPanel>
-                                </Border>
-
-                                <Button x:Name="BtnRecordHotkey" Content="⏺️  Записати нову комбінацію з клавіатури" Style="{StaticResource OrbitPrimaryButton}" HorizontalAlignment="Left" Click="BtnRecordHotkey_Click" />
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Картка 2 (Права верхня): Ігровий режим / Пауза -->
-                        <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Margin="11,0,0,20" Padding="24">
-                            <StackPanel>
-                                <DockPanel Margin="0,0,0,14">
-                                    <Border Width="42" Height="42" CornerRadius="12" Background="{StaticResource OrbitRoseSoftBg}">
-                                        <TextBlock Text="🎮" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <CheckBox x:Name="CheckPauseGestures" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" Click="CheckPauseGestures_Click" />
-                                </DockPanel>
-
-                                <TextBlock Text="Ігровий режим (Тиша)" FontSize="18" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" Margin="0,4,0,6" />
-                                <TextBlock Text="Тимчасово зупиняє реакцію на всі гарячі клавіші та жести миші, щоб не заважати під час повноекранних ігор або монтажу."
-                                           FontSize="13" Foreground="{StaticResource OrbitTextSecondary}" TextWrapping="Wrap" LineHeight="19" />
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Картка 3 (Ліва нижня): Жест струшування -->
-                        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource OrbitCardStyle}" Margin="0,0,11,0" Padding="22,20">
-                            <DockPanel>
-                                <Border Width="44" Height="44" CornerRadius="12" Background="{StaticResource OrbitBlueSoftBg}" Margin="0,0,16,0" VerticalAlignment="Center">
-                                    <TextBlock Text="👋" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <CheckBox IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" VerticalAlignment="Center" />
-                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                    <TextBlock Text="Струшування файлу мишею (Shake)" FontSize="15.5" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Потрусіть затиснутий файл вліво-вправо для появи полички або меню" FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,3,0,0" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </DockPanel>
-                        </Border>
-
-                        <!-- Картка 4 (Права нижня): Середня кнопка миші -->
-                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource OrbitCardStyle}" Margin="11,0,0,0" Padding="22,20">
-                            <DockPanel>
-                                <Border Width="44" Height="44" CornerRadius="12" Background="{StaticResource OrbitGreenSoftBg}" Margin="0,0,16,0" VerticalAlignment="Center">
-                                    <TextBlock Text="🖱️" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <CheckBox IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" VerticalAlignment="Center" />
-                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                    <TextBlock Text="Клік коліщатком у Провіднику" FontSize="15.5" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Виклик радіального меню натисканням середньої кнопки миші" FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,3,0,0" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </DockPanel>
-                        </Border>
-                    </Grid>
-
-                    <!-- ========================================================= -->
-                    <!-- ЕКРАН 4: "ШАБЛОНИ" (КАРТКОВА ГАЛЕРЕЯ ORBIT)                -->
-                    <!-- ========================================================= -->
-                    <Grid x:Name="ScreenPresets" Visibility="Collapsed">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <!-- Панель створення нового шаблону -->
-                        <Border Grid.Row="0" Style="{StaticResource OrbitCardStyle}" Padding="20,16" Margin="0,0,0,20">
-                            <DockPanel>
-                                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
-                                    <TextBlock Text="Конструктор макросів та пресетів" FontSize="16" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Об'єднуйте кілька дій (ресайз, формат, якість) у єдиний сектор кругового меню" FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,2,0,0" />
-                                </StackPanel>
-                                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="➕  Створити новий шаблон" Style="{StaticResource OrbitPrimaryButton}" Click="BtnCreatePreset_Click" />
-                            </DockPanel>
-                        </Border>
-
-                        <!-- 3-колонкова сітка карток пресетів -->
-                        <UniformGrid Grid.Row="1" Columns="3" VerticalAlignment="Top">
-                            <!-- Пресет 1 -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,0" Padding="22">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,14">
-                                        <Border Width="42" Height="42" CornerRadius="11" Background="{StaticResource OrbitBlueSoftBg}">
-                                            <TextBlock Text="🌐" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="8" Padding="10,4">
-                                            <TextBlock Text="WebP 80%" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitCyanBrush}" />
-                                        </Border>
-                                    </DockPanel>
-
-                                    <TextBlock Text="Для інтернету 1920px" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Автоматичне масштабування до FullHD, конвертація у WebP та очищення EXIF метаданих."
-                                               FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,6,0,16" LineHeight="18" />
-
-                                    <WrapPanel Margin="0,0,0,18">
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,6,6">
-                                            <TextBlock Text="1920px Max" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,6,6">
-                                            <TextBlock Text="Якість 80%" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,0,6">
-                                            <TextBlock Text="Без метаданих" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                    </WrapPanel>
-
-                                    <Button Content="Запустити шаблон" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Stretch" Click="BtnTestPreset_Click" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Пресет 2 -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="5,0,5,0" Padding="22">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,14">
-                                        <Border Width="42" Height="42" CornerRadius="11" Background="{StaticResource OrbitPurpleSoftBg}">
-                                            <TextBlock Text="🖤" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="8" Padding="10,4">
-                                            <TextBlock Text="Монохром" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
-                                        </Border>
-                                    </DockPanel>
-
-                                    <TextBlock Text="Чорно-білий архів" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Перетворення фото у глибокі відтінки сірого зі збереженням високої деталізації."
-                                               FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,6,0,16" LineHeight="18" />
-
-                                    <WrapPanel Margin="0,0,0,18">
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,6,6">
-                                            <TextBlock Text="Grayscale" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,6,6">
-                                            <TextBlock Text="PNG / JPG" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                    </WrapPanel>
-
-                                    <Button Content="Запустити шаблон" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Stretch" Click="BtnTestPreset_Click" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Пресет 3 -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,0" Padding="22">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,14">
-                                        <Border Width="42" Height="42" CornerRadius="11" Background="{StaticResource OrbitGreenSoftBg}">
-                                            <TextBlock Text="📄" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{StaticResource OrbitGreenSoftBg}" CornerRadius="8" Padding="10,4">
-                                            <TextBlock Text="Документ" FontSize="11" FontWeight="Bold" Foreground="{StaticResource OrbitGreenLightBrush}" />
-                                        </Border>
-                                    </DockPanel>
-
-                                    <TextBlock Text="Швидкий PDF-пакет" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Миттєве формування готового до друку або пересилання PDF-документа."
-                                               FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" TextWrapping="Wrap" Margin="0,6,0,16" LineHeight="18" />
-
-                                    <WrapPanel Margin="0,0,0,18">
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,6,6">
-                                            <TextBlock Text="Авто-формат A4" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                        <Border Background="{StaticResource OrbitRecessedBgBrush}" CornerRadius="6" Padding="8,4" Margin="0,0,6,6">
-                                            <TextBlock Text="Стиснення" FontSize="11" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </Border>
-                                    </WrapPanel>
-
-                                    <Button Content="Запустити шаблон" Style="{StaticResource OrbitSecondaryButton}" HorizontalAlignment="Stretch" Click="BtnTestPreset_Click" />
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-                    </Grid>
-
-                    <!-- ========================================================= -->
-                    <!-- ЕКРАН 5: "ВІДСТЕЖЕННЯ ПАПОК" (КАРТКОВА АВТОМАТИЗАЦІЯ)      -->
-                    <!-- ========================================================= -->
-                    <Grid x:Name="ScreenFolders" Visibility="Collapsed">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <!-- Верхня картка додавання правила -->
-                        <Border Grid.Row="0" Style="{StaticResource OrbitCardStyle}" Padding="24,20" Margin="0,0,0,20">
-                            <StackPanel>
-                                <DockPanel Margin="0,0,0,14">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource OrbitAmberSoftBg}" Margin="0,0,12,0">
-                                            <TextBlock Text="📂" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Нове правило автоматичного моніторингу" FontSize="15.5" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Усі нові файли у вибраній папці будуть автоматично оброблені у фоні" FontSize="12" Foreground="{StaticResource OrbitTextSecondary}" />
-                                        </StackPanel>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Як працює автоматичне відстеження папок?" FontSize="14" FontWeight="Bold" Foreground="#F2F3F7" />
+                                        <TextBlock Text="Halo стежить за обраною папкою у фоновому режимі. Щойно ви завантажуєте або зберігаєте туди новий файл, програма автоматично виконує обрану дію (конвертує фото у WebP/PNG, стискає або розкладає файли по підпапках «Зображення», «Документи», «Відео»)."
+                                                   FontSize="12" Foreground="#C4C7E0" TextWrapping="Wrap" Margin="0,3,0,0" />
                                     </StackPanel>
-                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Огляд папки..." Style="{StaticResource OrbitSecondaryButton}" Click="BtnAddFolder_Click" />
                                 </DockPanel>
+                            </Border>
 
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="230" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                            <!-- Картка додавання правила -->
+                            <Border Grid.Row="1" Style="{StaticResource OrbitCardStyle}" Padding="20,18" Margin="0,0,0,16">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,12">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="32" Height="32" CornerRadius="9" Background="{StaticResource OrbitAmberSoftBg}" Margin="0,0,10,0">
+                                                <TextBlock Text="📂" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="Додати папку для авто-обробки" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock Text="Виберіть каталог на ПК та дію, яку потрібно виконувати" FontSize="11.5" Foreground="{DynamicResource OrbitTextSecondary}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="📁  Огляд папки..." Style="{StaticResource OrbitSecondaryButton}" Click="BtnAddFolder_Click" />
+                                    </DockPanel>
 
-                                    <TextBox x:Name="QuickFolderInput" Grid.Column="0" Text="C:\Users\...\Downloads" Style="{StaticResource OrbitTextBoxStyle}" Margin="0,0,12,0" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="260" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <ComboBox x:Name="QuickActionCombo" Grid.Column="1" Margin="0,0,12,0" SelectedIndex="0" Padding="12,9" FontSize="13">
-                                        <ComboBoxItem Content="Конвертувати у WebP" Tag="image_to_webp" />
-                                        <ComboBoxItem Content="Конвертувати у PNG" Tag="image_to_png" />
-                                        <ComboBoxItem Content="Стиснути зображення" Tag="image_compress" />
-                                        <ComboBoxItem Content="Чорно-білий фільтр" Tag="image_grayscale" />
-                                    </ComboBox>
+                                        <TextBox x:Name="QuickFolderInput" Grid.Column="0" Text="" Style="{StaticResource OrbitTextBoxStyle}" Margin="0,0,10,0" />
 
-                                    <Button Grid.Column="2" Content="➕  Додати правило" Style="{StaticResource OrbitPrimaryButton}" Click="BtnQuickAddRule_Click" />
-                                </Grid>
-                            </StackPanel>
-                        </Border>
+                                        <ComboBox x:Name="QuickActionCombo" Grid.Column="1" Margin="0,0,10,0" SelectedIndex="0">
+                                            <ComboBoxItem Content="Авто-сортування по підпапках" Tag="folder_auto_sort" />
+                                            <ComboBoxItem Content="Конвертувати фото у WebP" Tag="image_to_webp" />
+                                            <ComboBoxItem Content="Конвертувати фото у PNG" Tag="image_to_png" />
+                                            <ComboBoxItem Content="Стискати нові зображення" Tag="image_compress" />
+                                            <ComboBoxItem Content="Чорно-білий фільтр для фото" Tag="image_grayscale" />
+                                        </ComboBox>
 
-                        <!-- Картковий список активних папок -->
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <ItemsControl x:Name="FoldersRulesItemsControl">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{StaticResource OrbitCardStyle}" Padding="20,16" Margin="0,0,0,12">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="2" Content="➕  Додати правило" Style="{StaticResource OrbitPrimaryButton}" Click="BtnQuickAddRule_Click" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
 
-                                                <Border Grid.Column="0" Width="42" Height="42" CornerRadius="11" Background="{StaticResource OrbitPurpleSoftBg}" Margin="0,0,16,0">
-                                                    <TextBlock Text="📁" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                </Border>
+                            <!-- Картковий список активних папок -->
+                            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl x:Name="FoldersRulesItemsControl">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource OrbitCardStyle}" Padding="18,14" Margin="0,0,0,10">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
 
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding FolderPath}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                                    <TextBlock Text="{Binding AssignedActionId, StringFormat='Правило обробки: {0}'}" FontSize="12" Foreground="{StaticResource OrbitPurpleLightBrush}" Margin="0,3,0,0" />
-                                                </StackPanel>
+                                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="10" Background="{StaticResource OrbitPurpleSoftBg}" Margin="0,0,14,0">
+                                                        <TextBlock Text="📁" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
 
-                                                <Button Grid.Column="2" Content="Видалити" Style="{StaticResource OrbitSecondaryButton}" Padding="14,7" Margin="0,0,16,0"
-                                                        Tag="{Binding}" Click="BtnDeleteFolderRule_Click" />
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                        <TextBlock Text="{Binding FolderPath}" FontSize="13.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{Binding ActionDisplayName}" FontSize="12" Foreground="{StaticResource OrbitPurpleLightBrush}" Margin="0,2,0,0" />
+                                                    </StackPanel>
 
-                                                <CheckBox Grid.Column="3" IsChecked="{Binding IsEnabled, Mode=TwoWay}"
-                                                          Style="{StaticResource OrbitToggleSwitch}" Tag="{Binding}" Click="FolderRuleToggle_Click" />
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
+                                                    <Button Grid.Column="2" Content="▶ Обробити зараз" Style="{StaticResource OrbitSecondaryButton}" Padding="12,6" Margin="0,0,8,0"
+                                                            Tag="{Binding}" Click="BtnRunFolderRuleNow_Click" />
+
+                                                    <Button Grid.Column="3" Content="Видалити" Style="{StaticResource OrbitSecondaryButton}" Padding="12,6" Margin="0,0,14,0"
+                                                            Tag="{Binding}" Click="BtnDeleteFolderRule_Click" />
+
+                                                    <CheckBox Grid.Column="4" IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                                              Style="{StaticResource OrbitToggleSwitch}" Tag="{Binding}" Click="FolderRuleToggle_Click" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- ========================================================= -->
+                        <!-- ЕКРАН 5: "НАЛАШТУВАННЯ" (МОВА, ТЕМИ, ПРОВІДНИК)             -->
+                        <!-- ========================================================= -->
+                        <Grid x:Name="ScreenSettings" Visibility="Collapsed">
+                            <Grid.RenderTransform>
+                                <TranslateTransform X="0" Y="0" />
+                            </Grid.RenderTransform>
+                            <UniformGrid Columns="2" Rows="2" VerticalAlignment="Top">
+                                <!-- Картка 1: Мова та інтерфейс -->
+                                <Border Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,18" Padding="22">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,12">
+                                            <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource OrbitPurpleSoftBg}">
+                                                <TextBlock Text="🌍" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="7" Padding="10,3">
+                                                <TextBlock Text="Локалізація" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
+                                            </Border>
+                                        </DockPanel>
+                                        <TextBlock x:Name="TxtSettingsLangTitle" Text="Мова інтерфейсу" FontSize="16.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock x:Name="TxtSettingsLangSub" Text="Миттєва зміна мови всіх меню та підписів" FontSize="12" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,4,0,14" />
+                                        <ComboBox x:Name="LanguageCombo" SelectedIndex="0" SelectionChanged="LanguageCombo_SelectionChanged">
+                                            <ComboBoxItem Content="Українська (Основна)" Tag="uk" />
+                                            <ComboBoxItem Content="English (US)" Tag="en" />
+                                            <ComboBoxItem Content="Polski" Tag="pl" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Картка 2: Тема та візуальний стиль -->
+                                <Border Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,18" Padding="22">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,12">
+                                            <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource OrbitBlueSoftBg}">
+                                                <TextBlock Text="🎨" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="7" Padding="10,3">
+                                                <TextBlock Text="Оформлення" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitCyanBrush}" />
+                                            </Border>
+                                        </DockPanel>
+                                        <TextBlock x:Name="TxtSettingsThemeTitle" Text="Кольорова тема Halo" FontSize="16.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                        <TextBlock x:Name="TxtSettingsThemeSub" Text="Налаштування палітри вікна та карток у реальному часі" FontSize="12" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,4,0,14" />
+                                        <ComboBox x:Name="GeneralThemeCombo" SelectedIndex="0" SelectionChanged="GeneralThemeCombo_SelectionChanged">
+                                            <ComboBoxItem Content="Темна Orbit (Фіолетово-графітова)" Tag="Dark" />
+                                            <ComboBoxItem Content="Глибока синя (Cyber Indigo)" Tag="Indigo" />
+                                            <ComboBoxItem Content="Світла Orbit (Light)" Tag="Light" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Картка 3: Автозапуск та Провідник Windows -->
+                                <Border Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,0" Padding="22">
+                                    <StackPanel>
+                                        <TextBlock x:Name="TxtSettingsWinTitle" Text="Інтеграція з Windows" FontSize="16.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" Margin="0,0,0,14" />
+
+                                        <DockPanel Margin="0,0,0,14">
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Запускати разом із Windows" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock Text="Автоматичний старт програми при вході в систему" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" />
+                                            </StackPanel>
+                                            <CheckBox x:Name="ToggleAutostart" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" Click="ToggleAutostart_Click" />
+                                        </DockPanel>
+
+                                        <DockPanel>
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Контекстне меню Провідника" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock Text="Додати пункт «Відкрити у Halo» при кліку ПКМ на файлі чи папці" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" />
+                                            </StackPanel>
+                                            <CheckBox x:Name="ToggleExplorerMenu" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" Click="ToggleExplorerMenu_Click" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Картка 4: Поведінка збереження та анімацій -->
+                                <Border Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,0" Padding="22">
+                                    <StackPanel>
+                                        <TextBlock x:Name="TxtSettingsBehaviorTitle" Text="Поведінка та швидкодія" FontSize="16.5" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" Margin="0,0,0,14" />
+
+                                        <DockPanel Margin="0,0,0,14">
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Автоматично ховати меню після дії" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock Text="Закривати радіальне коло одразу після обробки файлу" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" />
+                                            </StackPanel>
+                                            <CheckBox x:Name="ToggleAutoHide" IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" Click="ToggleAutoHide_Click" />
+                                        </DockPanel>
+
+                                        <DockPanel>
+                                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <TextBlock Text="Плавні анімації переходів та секторів" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextPrimary}" />
+                                                <TextBlock Text="Анімація появи меню та перемикання вкладок" FontSize="11.5" Foreground="{DynamicResource OrbitTextMuted}" />
+                                            </StackPanel>
+                                            <CheckBox x:Name="ToggleSmoothAnim" IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" Click="ToggleSmoothAnim_Click" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+                        </Grid>
+
                     </Grid>
-
-                    <!-- ========================================================= -->
-                    <!-- ЕКРАН 6: "НАЛАШТУВАННЯ" (2x2 КАРТКОВА СІТКА ORBIT)         -->
-                    <!-- ========================================================= -->
-                    <Grid x:Name="ScreenSettings" Visibility="Collapsed">
-                        <UniformGrid Columns="2" Rows="2" VerticalAlignment="Top">
-                            <!-- Картка 1: Мова та інтерфейс -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,20" Padding="24">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,14">
-                                        <Border Width="40" Height="40" CornerRadius="11" Background="{StaticResource OrbitPurpleSoftBg}">
-                                            <TextBlock Text="🌍" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{StaticResource OrbitPurpleSoftBg}" CornerRadius="7" Padding="10,3">
-                                            <TextBlock Text=" Локалізація " FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitPurpleLightBrush}" />
-                                        </Border>
-                                    </DockPanel>
-                                    <TextBlock Text="Мова та відображення" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Оберіть основну мову інтерфейсу та підписів секторів" FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,4,0,16" />
-                                    <ComboBox x:Name="LanguageCombo" SelectedIndex="0" Padding="12,8" FontSize="13">
-                                        <ComboBoxItem Content="Українська (Основна)" />
-                                        <ComboBoxItem Content="English" />
-                                    </ComboBox>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Картка 2: Тема та візуальний стиль -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,20" Padding="24">
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,14">
-                                        <Border Width="40" Height="40" CornerRadius="11" Background="{StaticResource OrbitBlueSoftBg}">
-                                            <TextBlock Text="🎨" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                        <Border DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{StaticResource OrbitBlueSoftBg}" CornerRadius="7" Padding="10,3">
-                                            <TextBlock Text="Оформлення" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource OrbitCyanBrush}" />
-                                        </Border>
-                                    </DockPanel>
-                                    <TextBlock Text="Кольорова тема Halo" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                    <TextBlock Text="Налаштування палітри вікна та радіального оверлею" FontSize="12.5" Foreground="{StaticResource OrbitTextSecondary}" Margin="0,4,0,16" />
-                                    <ComboBox x:Name="GeneralThemeCombo" SelectedIndex="0" Padding="12,8" FontSize="13" SelectionChanged="GeneralThemeCombo_SelectionChanged">
-                                        <ComboBoxItem Content="Темна Orbit (Рекомендовано)" />
-                                        <ComboBoxItem Content="Світла тема" />
-                                        <ComboBoxItem Content="Системна" />
-                                    </ComboBox>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Картка 3: Автозапуск та Провідник -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="0,0,10,0" Padding="24">
-                                <StackPanel>
-                                    <TextBlock Text="Інтеграція з Windows" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" Margin="0,0,0,14" />
-
-                                    <DockPanel Margin="0,0,0,14">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Запускати разом із Windows" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Фоновий старт у системному треї" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                        </StackPanel>
-                                        <CheckBox IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" />
-                                    </DockPanel>
-
-                                    <DockPanel>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Контекстне меню Провідника" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Пункт «Відкрити в Halo» при кліку правою кнопкою" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                        </StackPanel>
-                                        <CheckBox IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" />
-                                    </DockPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Картка 4: Поведінка збереження та анімацій -->
-                            <Border Style="{StaticResource OrbitCardStyle}" Margin="10,0,0,0" Padding="24">
-                                <StackPanel>
-                                    <TextBlock Text="Поведінка та швидкодія" FontSize="17" FontWeight="Bold" Foreground="{StaticResource OrbitTextPrimary}" Margin="0,0,0,14" />
-
-                                    <DockPanel Margin="0,0,0,14">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Зберігати файли поруч з оригіналом" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Автоматично додавати суфікс після конвертації" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                        </StackPanel>
-                                        <CheckBox IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" />
-                                    </DockPanel>
-
-                                    <DockPanel>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Плавні анімації секторів (60+ FPS)" FontSize="13.5" FontWeight="SemiBold" Foreground="{StaticResource OrbitTextPrimary}" />
-                                            <TextBlock Text="Апаратне прискорення рендерингу" FontSize="11.5" Foreground="{StaticResource OrbitTextMuted}" />
-                                        </StackPanel>
-                                        <CheckBox IsChecked="True" DockPanel.Dock="Right" HorizontalAlignment="Right" Style="{StaticResource OrbitToggleSwitch}" />
-                                    </DockPanel>
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-                    </Grid>
-
                 </Grid>
             </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </Window>

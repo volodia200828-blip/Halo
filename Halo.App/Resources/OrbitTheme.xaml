@@ -2,33 +2,32 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ================================================================= -->
-    <!-- 1. КОЛЬОРОВА ПАЛІТРА СТИЛЮ "ORBIT"                                -->
+    <!-- 1. КОЛЬОРОВА ПАЛІТРА СТИЛЮ "ORBIT" (ДИНАМІЧНІ РЕСУРСИ ДЛЯ ТЕМ)     -->
     <!-- ================================================================= -->
-    <!-- Основні фони -->
     <Color x:Key="OrbitWindowBgColor">#1E1E24</Color>
     <Color x:Key="OrbitSidebarBgColor">#17171C</Color>
     <Color x:Key="OrbitCardBgColor">#282832</Color>
-    <Color x:Key="OrbitCardHoverBgColor">#2E2E3A</Color>
+    <Color x:Key="OrbitCardHoverBgColor">#2F2F3D</Color>
     <Color x:Key="OrbitRecessedBgColor">#1B1B21</Color>
 
-    <SolidColorBrush x:Key="OrbitWindowBgBrush" Color="{StaticResource OrbitWindowBgColor}" />
-    <SolidColorBrush x:Key="OrbitSidebarBgBrush" Color="{StaticResource OrbitSidebarBgColor}" />
-    <SolidColorBrush x:Key="OrbitCardBgBrush" Color="{StaticResource OrbitCardBgColor}" />
-    <SolidColorBrush x:Key="OrbitCardHoverBgBrush" Color="{StaticResource OrbitCardHoverBgColor}" />
-    <SolidColorBrush x:Key="OrbitRecessedBgBrush" Color="{StaticResource OrbitRecessedBgColor}" />
+    <SolidColorBrush x:Key="OrbitWindowBgBrush" Color="#1E1E24" />
+    <SolidColorBrush x:Key="OrbitSidebarBgBrush" Color="#17171C" />
+    <SolidColorBrush x:Key="OrbitCardBgBrush" Color="#282832" />
+    <SolidColorBrush x:Key="OrbitCardHoverBgBrush" Color="#2F2F3D" />
+    <SolidColorBrush x:Key="OrbitRecessedBgBrush" Color="#1B1B21" />
 
     <!-- Рамки та розділювачі -->
     <SolidColorBrush x:Key="OrbitSidebarDividerBrush" Color="#262630" />
-    <SolidColorBrush x:Key="OrbitCardBorderBrush" Color="#343442" />
-    <SolidColorBrush x:Key="OrbitCardHoverBorderBrush" Color="#564D80" />
+    <SolidColorBrush x:Key="OrbitCardBorderBrush" Color="#353545" />
+    <SolidColorBrush x:Key="OrbitCardHoverBorderBrush" Color="#6D5AE6" />
     <SolidColorBrush x:Key="OrbitSubtleBorderBrush" Color="#2C2C38" />
 
-    <!-- Типографіка (не чисто білий, а м'яка ієрархія) -->
+    <!-- Типографіка -->
     <SolidColorBrush x:Key="OrbitTextPrimary" Color="#F2F3F7" />
     <SolidColorBrush x:Key="OrbitTextSecondary" Color="#A0A3B5" />
     <SolidColorBrush x:Key="OrbitTextMuted" Color="#6C7085" />
 
-    <!-- Акцентні кольори (Фіолетовий, Синій, Смарагдовий, Бурштиновий, Рожевий) -->
+    <!-- Акцентні кольори -->
     <SolidColorBrush x:Key="OrbitPurpleBrush" Color="#8B5CF6" />
     <SolidColorBrush x:Key="OrbitPurpleLightBrush" Color="#A78BFA" />
     <SolidColorBrush x:Key="OrbitPurpleSoftBg" Color="#2D2346" />
@@ -82,73 +81,150 @@
     </LinearGradientBrush>
 
     <!-- ================================================================= -->
-    <!-- 2. М'ЯКІ ТІНІ ДЛЯ ЕФЕКТУ "ВІДРИВУ" КАРТОК ВІД ФОНУ                -->
+    <!-- 2. ТІНІ ДЛЯ ФОНОВИХ ШАРІВ (БЕЗ РОЗМИТТЯ ТЕКСТУ)                   -->
     <!-- ================================================================= -->
     <DropShadowEffect x:Key="OrbitCardShadow"
-                      BlurRadius="26"
-                      ShadowDepth="7"
+                      BlurRadius="22"
+                      ShadowDepth="5"
                       Direction="270"
                       Color="#09090D"
-                      Opacity="0.45" />
+                      Opacity="0.4" />
 
     <DropShadowEffect x:Key="OrbitSoftShadow"
-                      BlurRadius="16"
-                      ShadowDepth="4"
+                      BlurRadius="14"
+                      ShadowDepth="3"
                       Direction="270"
                       Color="#09090D"
-                      Opacity="0.32" />
+                      Opacity="0.3" />
 
     <DropShadowEffect x:Key="OrbitPurpleGlow"
-                      BlurRadius="18"
+                      BlurRadius="16"
                       ShadowDepth="0"
                       Color="#8B5CF6"
-                      Opacity="0.45" />
+                      Opacity="0.4" />
 
     <!-- ================================================================= -->
-    <!-- 3. ВЕКТОРНІ ІКОНКИ (ЧИСТІ ЛІНІЇ)                                  -->
+    <!-- 3. ЧІТКІ ВЕКТОРНІ ІКОНКИ (БЕЗ ЗЛАМАНИХ ДУГ)                       -->
     <!-- ================================================================= -->
-    <PathGeometry x:Key="OrbitIconDashboard" Figures="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5zm10 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5zM4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4zm10-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7z" />
-    <PathGeometry x:Key="OrbitIconRadial" Figures="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-11v3m0 8v3m-7-7h3m8 0h3" />
-    <PathGeometry x:Key="OrbitIconKeys" Figures="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm3 4h2m2 0h2m2 0h2M7 14h10" />
-    <PathGeometry x:Key="OrbitIconTemplates" Figures="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-    <PathGeometry x:Key="OrbitIconFolders" Figures="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z" />
-    <PathGeometry x:Key="OrbitIconSettings" Figures="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7.4-2.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V19a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H5a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V5a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1H19a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z" />
-    <PathGeometry x:Key="OrbitIconPin" Figures="M16 3l5 5-2 2-2-1-4 4v5l-2 2-2-5-4 4-2-2 4-4H4l2-2 5-2-1-2 2-2z" />
-    <PathGeometry x:Key="OrbitIconMinimize" Figures="M5 12h14" />
-    <PathGeometry x:Key="OrbitIconMaximize" Figures="M5 5h14v14H5z" />
-    <PathGeometry x:Key="OrbitIconClose" Figures="M6 18L18 6M6 6l12 12" />
+    <PathGeometry x:Key="OrbitIconDashboard" Figures="M4,4 L10,4 L10,10 L4,10 Z M14,4 L20,4 L20,10 L14,10 Z M4,14 L10,14 L10,20 L4,20 Z M14,14 L20,14 L20,20 L14,20 Z" />
+    <PathGeometry x:Key="OrbitIconRadial" Figures="M12,2 A10,10 0 1 0 12,22 A10,10 0 1 0 12,2 Z M12,8 A4,4 0 1 0 12,16 A4,4 0 1 0 12,8 Z M12,2 L12,6 M12,18 L12,22 M2,12 L6,12 M18,12 L22,12" />
+    <PathGeometry x:Key="OrbitIconKeys" Figures="M3,6 L21,6 L21,18 L3,18 Z M6,10 L8,10 M11,10 L13,10 M16,10 L18,10 M7,14 L17,14" />
+    <PathGeometry x:Key="OrbitIconFolders" Figures="M3,6 L9,6 L11,8 L21,8 L21,19 L3,19 Z" />
+    <!-- Виправлена чітка іконка налаштувань (шестерня + внутрішнє кільце) -->
+    <PathGeometry x:Key="OrbitIconSettings" Figures="M12,8.5 A3.5,3.5 0 1 0 12,15.5 A3.5,3.5 0 1 0 12,8.5 Z M10.5,2.5 L13.5,2.5 L14.2,5.1 L16.5,6.1 L18.9,4.7 L21.0,6.8 L19.6,9.2 L20.6,11.5 L23.2,12.2 L20.6,14.8 L19.6,14.8 L18.9,19.3 L16.5,17.9 L14.2,18.9 L13.5,21.5 L10.5,21.5 L9.8,18.9 L7.5,17.9 L5.1,19.3 L3.0,17.2 L4.4,14.8 L3.4,12.5 L0.8,11.8 L3.4,9.2 L4.4,9.2 L5.1,4.7 L7.5,6.1 L9.8,5.1 Z" />
+    <PathGeometry x:Key="OrbitIconMinimize" Figures="M5,12 L19,12" />
+    <PathGeometry x:Key="OrbitIconMaximize" Figures="M5,5 L19,5 L19,19 L5,19 Z" />
+    <PathGeometry x:Key="OrbitIconClose" Figures="M6,18 L18,6 M6,6 L18,18" />
 
     <!-- ================================================================= -->
-    <!-- 4. СТИЛІ КАРТОК ТА НАВІГАЦІЇ "ORBIT"                              -->
+    <!-- 4. СТИЛІ КАРТОК ТА НАВІГАЦІЇ "ORBIT" (ЧІТКІ, БЕЗ МИЛА)            -->
     <!-- ================================================================= -->
-    <!-- Стандартна об'ємна картка Orbit -->
+    <!-- Стандартна картка Orbit (без Effect на батьківському Border, щоб ClearType-текст був ідеально чітким!) -->
     <Style x:Key="OrbitCardStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource OrbitCardBgBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource OrbitCardBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource OrbitCardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OrbitCardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="16" />
         <Setter Property="Padding" Value="22" />
-        <Setter Property="Effect" Value="{StaticResource OrbitCardShadow}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
-    <!-- Інтерактивна картка з підсвічуванням при наведенні -->
+    <!-- Інтерактивна картка з плавною анімацією підйому та масштабування при наведенні й кліку -->
     <Style x:Key="OrbitInteractiveCardStyle" TargetType="Border" BasedOn="{StaticResource OrbitCardStyle}">
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                    <TranslateTransform X="0" Y="0" />
+                </TransformGroup>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource OrbitCardHoverBgBrush}" />
-                <Setter Property="BorderBrush" Value="{StaticResource OrbitCardHoverBorderBrush}" />
+                <Setter Property="Background" Value="{DynamicResource OrbitCardHoverBgBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource OrbitCardHoverBorderBrush}" />
             </Trigger>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                         To="1.022" Duration="0:0:0.16">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                         To="1.022" Duration="0:0:0.16">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                         To="-3.5" Duration="0:0:0.16">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                         To="1.0" Duration="0:0:0.18">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                         To="1.0" Duration="0:0:0.18">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                         To="0" Duration="0:0:0.18">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                         To="0.97" Duration="0:0:0.08" />
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                         To="0.97" Duration="0:0:0.08" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="PreviewMouseLeftButtonUp">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                         To="1.022" Duration="0:0:0.12" />
+                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                         To="1.022" Duration="0:0:0.12" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
         </Style.Triggers>
     </Style>
 
     <!-- Пункт лівого меню (Сайдбар Orbit з кольоровим маркером зліва) -->
     <Style x:Key="OrbitSidebarItemStyle" TargetType="RadioButton">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource OrbitTextSecondary}" />
+        <Setter Property="Foreground" Value="{DynamicResource OrbitTextSecondary}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="Margin" Value="0,5" />
+        <Setter Property="Margin" Value="0,4" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -158,38 +234,34 @@
                             BorderBrush="Transparent"
                             BorderThickness="1"
                             CornerRadius="12"
-                            Padding="14,13">
+                            Padding="14,12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Кольоровий маркер зліва (border-left як в Orbit) -->
+                            <!-- Кольоровий маркер зліва -->
                             <Border x:Name="LeftAccentMarker"
                                     Grid.Column="0"
                                     Width="4"
-                                    Height="22"
+                                    Height="20"
                                     CornerRadius="2"
                                     Background="{StaticResource OrbitNavMarkerGradient}"
                                     Margin="-6,0,12,0"
-                                    Opacity="0">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="10" Color="#A855F7" Opacity="0.8" ShadowDepth="0" />
-                                </Border.Effect>
-                            </Border>
+                                    Opacity="0" />
 
                             <ContentPresenter Grid.Column="1" VerticalAlignment="Center" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ItemContainer" Property="Background" Value="#21212B" />
-                            <Setter Property="Foreground" Value="{StaticResource OrbitTextPrimary}" />
+                            <Setter TargetName="ItemContainer" Property="Background" Value="{DynamicResource OrbitCardHoverBgBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource OrbitTextPrimary}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="ItemContainer" Property="Background" Value="{StaticResource OrbitNavActiveBgGradient}" />
-                            <Setter TargetName="ItemContainer" Property="BorderBrush" Value="#4A3B78" />
+                            <Setter TargetName="ItemContainer" Property="BorderBrush" Value="#54428E" />
                             <Setter TargetName="LeftAccentMarker" Property="Opacity" Value="1" />
                             <Setter Property="Foreground" Value="#FFFFFF" />
                             <Setter Property="FontWeight" Value="SemiBold" />
@@ -200,32 +272,42 @@
         </Setter>
     </Style>
 
-    <!-- Головна акцентна кнопка Orbit (Фіолетово-синій градієнт + тінь) -->
+    <!-- Головна акцентна кнопка Orbit (Тінь на фоновому шарі, текст ідеально чіткий!) -->
     <Style x:Key="OrbitPrimaryButton" TargetType="Button">
         <Setter Property="Background" Value="{StaticResource OrbitPrimaryBtnGradient}" />
         <Setter Property="Foreground" Value="#FFFFFF" />
-        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="18,10" />
+        <Setter Property="Padding" Value="16,9" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="BtnBorder"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="11"
-                            Effect="{StaticResource OrbitPurpleGlow}">
-                        <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          Margin="{TemplateBinding Padding}" />
-                    </Border>
+                    <Grid>
+                        <!-- Фоновий шар зі світінням (не розмиває текст кнопки!) -->
+                        <Border x:Name="GlowLayer"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                Effect="{StaticResource OrbitPurpleGlow}" />
+                        <Border x:Name="BtnBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="#A78BFA"
+                                BorderThickness="1"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}" />
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="BtnBorder" Property="Background" Value="{StaticResource OrbitPrimaryBtnHoverGradient}" />
+                            <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#C4B5FD" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="BtnBorder" Property="Opacity" Value="0.88" />
+                            <Setter TargetName="BtnBorder" Property="Opacity" Value="0.86" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -235,14 +317,15 @@
 
     <!-- Другорядна карткова кнопка Orbit -->
     <Style x:Key="OrbitSecondaryButton" TargetType="Button">
-        <Setter Property="Background" Value="#2E2E3A" />
-        <Setter Property="Foreground" Value="{StaticResource OrbitTextPrimary}" />
-        <Setter Property="BorderBrush" Value="#3E3E4F" />
+        <Setter Property="Background" Value="{DynamicResource OrbitCardHoverBgBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OrbitTextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OrbitCardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="Padding" Value="15,9" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -250,18 +333,17 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="11">
+                            CornerRadius="10">
                         <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           Margin="{TemplateBinding Padding}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="BtnBorder" Property="Background" Value="#383847" />
-                            <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#635985" />
+                            <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#7C69EF" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="BtnBorder" Property="Background" Value="#252530" />
+                            <Setter TargetName="BtnBorder" Property="Opacity" Value="0.8" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -269,12 +351,12 @@
         </Setter>
     </Style>
 
-    <!-- Кнопки керування вікном (Згорнути, Розгорнути, Закрити) -->
+    <!-- Кнопки керування вікном -->
     <Style x:Key="OrbitWindowCapBtn" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="38" />
-        <Setter Property="Height" Value="30" />
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="28" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -284,7 +366,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#2A2A36" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource OrbitCardHoverBgBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -309,33 +391,41 @@
         </Setter>
     </Style>
 
-    <!-- Сучасний перемикач (Toggle Switch) у стилі Orbit -->
+    <!-- Компактний акуратний перемикач (Toggle Switch) у стилі Orbit (34x18) -->
     <Style x:Key="OrbitToggleSwitch" TargetType="CheckBox">
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Grid Width="46" Height="25">
+                        <Grid Width="34" Height="18">
                             <Border x:Name="SwitchTrack"
-                                    CornerRadius="12.5"
-                                    Background="#1B1B22"
-                                    BorderBrush="#383848"
-                                    BorderThickness="1.5" />
+                                    CornerRadius="9"
+                                    Background="{DynamicResource OrbitRecessedBgBrush}"
+                                    BorderBrush="{DynamicResource OrbitCardBorderBrush}"
+                                    BorderThickness="1.2" />
                             <Ellipse x:Name="SwitchThumb"
-                                     Width="17" Height="17"
+                                     Width="12" Height="12"
                                      Fill="#7D8196"
                                      HorizontalAlignment="Left"
-                                     Margin="4,0,0,0" />
+                                     VerticalAlignment="Center"
+                                     Margin="3,0,0,0" />
                         </Grid>
-                        <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center" />
+                        <ContentPresenter x:Name="SwitchContent"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center" />
                     </StackPanel>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="SwitchContent" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="SwitchContent" Property="Margin" Value="0" />
+                        </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="SwitchTrack" Property="Background" Value="{StaticResource OrbitPrimaryBtnGradient}" />
                             <Setter TargetName="SwitchTrack" Property="BorderBrush" Value="#A78BFA" />
                             <Setter TargetName="SwitchThumb" Property="HorizontalAlignment" Value="Right" />
-                            <Setter TargetName="SwitchThumb" Property="Margin" Value="0,0,4,0" />
+                            <Setter TargetName="SwitchThumb" Property="Margin" Value="0,0,3,0" />
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="#FFFFFF" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -344,15 +434,15 @@
         </Setter>
     </Style>
 
-    <!-- Кастомне темне текстове поле Orbit -->
+    <!-- Текстове поле Orbit -->
     <Style x:Key="OrbitTextBoxStyle" TargetType="TextBox">
-        <Setter Property="Background" Value="{StaticResource OrbitRecessedBgBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource OrbitTextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource OrbitRecessedBgBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OrbitTextPrimary}" />
         <Setter Property="CaretBrush" Value="#A78BFA" />
-        <Setter Property="BorderBrush" Value="#343444" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OrbitCardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1.5" />
-        <Setter Property="Padding" Value="14,10" />
-        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="Padding" Value="12,9" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -360,7 +450,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="11">
+                            CornerRadius="10">
                         <ScrollViewer x:Name="PART_ContentHost" Margin="0" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -373,11 +463,11 @@
         </Setter>
     </Style>
 
-    <!-- Кастомний темний ComboBox у стилі Orbit -->
+    <!-- ComboBox у стилі Orbit -->
     <Style TargetType="ComboBoxItem">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource OrbitTextPrimary}" />
-        <Setter Property="Padding" Value="12,9" />
+        <Setter Property="Foreground" Value="{DynamicResource OrbitTextPrimary}" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -391,7 +481,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#323242" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource OrbitCardHoverBgBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource OrbitNavActiveBgGradient}" />
@@ -405,12 +495,12 @@
     </Style>
 
     <Style TargetType="ComboBox">
-        <Setter Property="Background" Value="{StaticResource OrbitRecessedBgBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource OrbitTextPrimary}" />
-        <Setter Property="BorderBrush" Value="#343444" />
+        <Setter Property="Background" Value="{DynamicResource OrbitRecessedBgBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OrbitTextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OrbitCardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1.5" />
-        <Setter Property="Padding" Value="14,10" />
-        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="Padding" Value="12,9" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -423,18 +513,18 @@
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Border x:Name="Bd"
-                                            Background="{StaticResource OrbitRecessedBgBrush}"
-                                            BorderBrush="#343444"
+                                            Background="{DynamicResource OrbitRecessedBgBrush}"
+                                            BorderBrush="{DynamicResource OrbitCardBorderBrush}"
                                             BorderThickness="1.5"
-                                            CornerRadius="11">
+                                            CornerRadius="10">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="36" />
+                                                <ColumnDefinition Width="34" />
                                             </Grid.ColumnDefinitions>
                                             <Path Grid.Column="1"
                                                   Data="M0,0 L4.5,4.5 L9,0"
-                                                  Stroke="#A0A3B5"
+                                                  Stroke="{DynamicResource OrbitTextSecondary}"
                                                   StrokeThickness="1.8"
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center" />
@@ -442,7 +532,7 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Bd" Property="BorderBrush" Value="#564D80" />
+                                            <Setter TargetName="Bd" Property="BorderBrush" Value="#6D5AE6" />
                                         </Trigger>
                                         <Trigger Property="IsChecked" Value="True">
                                             <Setter TargetName="Bd" Property="BorderBrush" Value="#8B5CF6" />
@@ -457,7 +547,7 @@
                                           Content="{TemplateBinding SelectionBoxItem}"
                                           ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                          Margin="14,9,36,9"
+                                          Margin="13,8,34,8"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Left" />
 
@@ -473,12 +563,11 @@
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                   Margin="0,4,0,0">
                                 <Border x:Name="DropDownBorder"
-                                        Background="#23232D"
-                                        BorderBrush="#3E3E52"
+                                        Background="{DynamicResource OrbitCardBgBrush}"
+                                        BorderBrush="{DynamicResource OrbitCardBorderBrush}"
                                         BorderThickness="1"
                                         CornerRadius="12"
-                                        Padding="4"
-                                        Effect="{StaticResource OrbitCardShadow}">
+                                        Padding="4">
                                     <ScrollViewer SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
@@ -491,7 +580,7 @@
         </Setter>
     </Style>
 
-    <!-- Тонкий темний скролбар -->
+    <!-- Тонкий скролбар -->
     <Style TargetType="ScrollBar">
         <Setter Property="Width" Value="6" />
         <Setter Property="Background" Value="Transparent" />
@@ -504,7 +593,7 @@
                                 <Thumb>
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <Border Background="#383848" CornerRadius="3" />
+                                            <Border Background="#3E3E52" CornerRadius="3" />
                                         </ControlTemplate>
                                     </Thumb.Template>
                                 </Thumb>

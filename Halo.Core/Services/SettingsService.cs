@@ -66,6 +66,9 @@ public class SettingsService
 
     private void EnsureDefaultActions(AppSettings settings)
     {
+        // Remove deprecated shelf action if present
+        settings.Actions.RemoveAll(a => a.Id == "system_shelf_add");
+
         var defaults = DefaultActionsProvider.GetDefaults();
         var existingIds = settings.Actions.Select(a => a.Id).ToHashSet();
 
