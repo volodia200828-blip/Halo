@@ -6,13 +6,14 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Effects;
 using Halo.App.Native;
 using Halo.App.Views;
 using Halo.Core.Models;
 using Halo.Core.Services;
 using Microsoft.Win32;
+using Wpf.Ui.Controls;
+using MessageBoxButton = System.Windows.MessageBoxButton;
+using MessageBoxImage = System.Windows.MessageBoxImage;
 
 namespace Halo.App;
 
@@ -23,7 +24,7 @@ public struct POINT
     public int Y;
 }
 
-public partial class MainWindow : Window
+public partial class MainWindow : FluentWindow
 {
     [DllImport("user32.dll")]
     private static extern bool GetCursorPos(out POINT lpPoint);
@@ -51,7 +52,10 @@ public partial class MainWindow : Window
     private void InitializeSubsystems()
     {
         _radialWindow = new RadialOverlayWindow();
-        _radialWindow.OpenSettingsRequested += () => Dispatcher.Invoke(() => NavSettings.IsChecked = true);
+        _radialWindow.OpenSettingsRequested += () => Dispatcher.Invoke(() =>
+        {
+            SwitchToPage("PageSettings");
+        });
         _radialWindow.AddToShelfRequested += AddToShelf;
 
         _shelfWindow = new ShelfWindow();
@@ -104,66 +108,50 @@ public partial class MainWindow : Window
     }
 
     // ==========================================
-    // TITLEBAR WINDOW CONTROLS
+    // NAVIGATION
     // ==========================================
-    private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+    private void RootNavigation_SelectionChanged(NavigationView sender, RoutedEventArgs args)
     {
-        if (e.ChangedButton == MouseButton.Left)
+        if (sender.SelectedItem is NavigationViewItem selectedItem && selectedItem.Tag is string tag)
         {
-            DragMove();
+            SwitchToPage(tag);
         }
     }
 
-    private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+    private void SwitchToPage(string pageTag)
     {
-        WindowState = WindowState.Minimized;
-    }
+        if (PageMain == null || PageRadial == null || PageInput == null || PagePresets == null || PageFolders == null || PageSettings == null) return;
 
-    private void BtnClose_Click(object sender, RoutedEventArgs e)
-    {
-        Close();
-    }
+        PageMain.Visibility = Visibility.Collapsed;
+        PageRadial.Visibility = Visibility.Collapsed;
+        PageInput.Visibility = Visibility.Collapsed;
+        PagePresets.Visibility = Visibility.Collapsed;
+        PageFolders.Visibility = Visibility.Collapsed;
+        PageSettings.Visibility = Visibility.Collapsed;
 
-    // ==========================================
-    // SIDEBAR NAVIGATION
-    // ==========================================
-    private void Nav_Checked(object sender, RoutedEventArgs e)
-    {
-        if (ScreenMain == null || ScreenInput == null || ScreenRadial == null || ScreenPresets == null || ScreenFolders == null || ScreenSettings == null) return;
-
-        ScreenMain.Visibility = Visibility.Collapsed;
-        ScreenInput.Visibility = Visibility.Collapsed;
-        ScreenRadial.Visibility = Visibility.Collapsed;
-        ScreenPresets.Visibility = Visibility.Collapsed;
-        ScreenFolders.Visibility = Visibility.Collapsed;
-        ScreenSettings.Visibility = Visibility.Collapsed;
-
-        if (sender == NavMain)
+        switch (pageTag)
         {
-            ScreenMain.Visibility = Visibility.Visible;
-            RefreshTelemetry();
-        }
-        else if (sender == NavInput)
-        {
-            ScreenInput.Visibility = Visibility.Visible;
-        }
-        else if (sender == NavRadial)
-        {
-            ScreenRadial.Visibility = Visibility.Visible;
-            LoadRadialScreenData();
-        }
-        else if (sender == NavPresets)
-        {
-            ScreenPresets.Visibility = Visibility.Visible;
-        }
-        else if (sender == NavFolders)
-        {
-            ScreenFolders.Visibility = Visibility.Visible;
-            LoadFoldersData();
-        }
-        else if (sender == NavSettings)
-        {
-            ScreenSettings.Visibility = Visibility.Visible;
+            case "PageMain":
+                PageMain.Visibility = Visibility.Visible;
+                RefreshTelemetry();
+                break;
+            case "PageRadial":
+                PageRadial.Visibility = Visibility.Visible;
+                LoadRadialScreenData();
+                break;
+            case "PageInput":
+                PageInput.Visibility = Visibility.Visible;
+                break;
+            case "PagePresets":
+                PagePresets.Visibility = Visibility.Visible;
+                break;
+            case "PageFolders":
+                PageFolders.Visibility = Visibility.Visible;
+                LoadFoldersData();
+                break;
+            case "PageSettings":
+                PageSettings.Visibility = Visibility.Visible;
+                break;
         }
     }
 
@@ -186,16 +174,11 @@ public partial class MainWindow : Window
         _shelfWindow.Activate();
     }
 
-    private void BtnJumpToRadial_Click(object sender, RoutedEventArgs e)
-    {
-        NavRadial.IsChecked = true;
-    }
-
     private void BtnPickFile_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog
         {
-            Title = "Виберіть файл для виклику меню Halo",
+            Title = "Виберіть файл для тесту Halo",
             Filter = "Всі файли (*.*)|*.*|Зображення (*.png;*.jpg;*.webp)|*.png;*.jpg;*.webp"
         };
 
@@ -242,30 +225,13 @@ public partial class MainWindow : Window
 
         _isRecordingHotkey = true;
         HotkeyRecorderStatusText.Text = "Натисніть клавіші...";
-        HotkeyRecorderStatusText.Foreground = new SolidColorBrush(Color.FromRgb(248, 113, 113));
         HotkeyRecorderHint.Text = "Натисніть комбінацію (наприклад Alt+Space або Ctrl+Shift+H). Esc для скасування.";
-        BtnRecordHotkey.Content = "Скасувати";
-
-        HotkeyRecorderCard.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 240, 255));
-        HotkeyRecorderCard.Effect = new DropShadowEffect
-        {
-            BlurRadius = 18,
-            Color = Color.FromRgb(0, 240, 255),
-            Opacity = 0.5,
-            ShadowDepth = 0
-        };
     }
 
     private void StopRecordingHotkey()
     {
         _isRecordingHotkey = false;
-        HotkeyRecorderStatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 240, 255));
-        HotkeyRecorderHint.Text = "Натисніть «Записати» та натисніть комбінацію на клавіатурі";
-        BtnRecordHotkey.Content = "⏺️  Записати комбінацію";
-
-        HotkeyRecorderCard.BorderBrush = (Brush)FindResource("GlassBorderLight");
-        HotkeyRecorderCard.Effect = null;
-
+        HotkeyRecorderHint.Text = "Натисніть сюди, щоб призначити нову комбінацію на клавіатурі";
         RegisterConfiguredHotkey();
     }
 
@@ -301,7 +267,7 @@ public partial class MainWindow : Window
 
         if (parts.Count == 0)
         {
-            parts.Add("Alt"); // Default modifier if none pressed
+            parts.Add("Alt");
         }
 
         parts.Add(key.ToString());
@@ -386,9 +352,9 @@ public partial class MainWindow : Window
 
     private void RadialActionToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is CheckBox cb && cb.Tag is ActionItem item)
+        if (sender is ToggleSwitch ts && ts.Tag is ActionItem item)
         {
-            item.IsEnabled = cb.IsChecked ?? true;
+            item.IsEnabled = ts.IsChecked ?? true;
             SettingsService.Instance.SaveSettings();
             UpdateCategorySectors();
             UpdateCategoryBadges();
@@ -421,13 +387,13 @@ public partial class MainWindow : Window
 
             settings.Actions.Add(newAction);
             SettingsService.Instance.SaveSettings(settings);
-            MessageBox.Show($"Шаблон «{name}» успішно додано!", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
+            System.Windows.MessageBox.Show($"Шаблон «{name}» успішно додано!", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
     private void BtnTestPreset_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("Пресет готовий до виконання. Виберіть файл або відкрийте меню Halo над потрібним файлом.", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
+        System.Windows.MessageBox.Show("Пресет готовий до виконання. Виберіть файл або натисніть Alt+Space над файлом у Провіднику.", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     // ==========================================
@@ -459,7 +425,7 @@ public partial class MainWindow : Window
         var folder = QuickFolderInput.Text.Trim();
         if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
         {
-            MessageBox.Show("Будь ласка, вкажіть дійсну існуючу папку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            System.Windows.MessageBox.Show("Будь ласка, вкажіть дійсну існуючу папку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -479,12 +445,12 @@ public partial class MainWindow : Window
         LoadFoldersData();
         FolderWatcherService.Instance.Start();
 
-        MessageBox.Show($"Папку «{Path.GetFileName(folder)}» додано до автоматичного моніторингу!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+        System.Windows.MessageBox.Show($"Папку «{Path.GetFileName(folder)}» додано до автоматичного моніторингу!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void BtnDeleteFolderRule_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is WatchedFolderConfig rule)
+        if (sender is Wpf.Ui.Controls.Button btn && btn.Tag is WatchedFolderConfig rule)
         {
             var settings = SettingsService.Instance.Current;
             settings.WatchedFolders.Remove(rule);
@@ -497,9 +463,9 @@ public partial class MainWindow : Window
 
     private void FolderRuleToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is CheckBox cb && cb.Tag is WatchedFolderConfig rule)
+        if (sender is ToggleSwitch ts && ts.Tag is WatchedFolderConfig rule)
         {
-            rule.IsEnabled = cb.IsChecked ?? true;
+            rule.IsEnabled = ts.IsChecked ?? true;
             SettingsService.Instance.SaveSettings();
             FolderWatcherService.Instance.Start();
         }
