@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Light Theme Brushes -->
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F1F5F9" />
+    <SolidColorBrush x:Key="GlassBackgroundBrush" Color="#EEFFFFFF" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="CardHoverBrush" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#E2E8F0" />
+    <SolidColorBrush x:Key="GlassBorderBrush" Color="#60CBD5E1" />
+
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#0F172A" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#475569" />
+    <SolidColorBrush x:Key="TertiaryTextBrush" Color="#94A3B8" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="#0284C7" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#0369A1" />
+
+    <!-- Radial Menu Specific -->
+    <SolidColorBrush x:Key="RadialSectorNormalBrush" Color="#E6F8FAFC" />
+    <SolidColorBrush x:Key="RadialSectorHoverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="RadialCenterHubBrush" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="RadialHubBorderBrush" Color="#600284C7" />
+
+</ResourceDictionary>

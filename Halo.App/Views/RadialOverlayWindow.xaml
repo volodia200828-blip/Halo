@@ -1,0 +1,113 @@
+<Window x:Class="Halo.App.Views.RadialOverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Halo Radial Menu"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        KeyDown="Window_KeyDown"
+        MouseDown="Window_MouseDown"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragOver="Window_DragOver">
+
+    <Window.Resources>
+        <Storyboard x:Key="EntranceAnimation">
+            <DoubleAnimation Storyboard.TargetName="MenuRootTransform"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="0.4" To="1.0" Duration="0:0:0.28">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase Amplitude="0.3" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="MenuRootTransform"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="0.4" To="1.0" Duration="0:0:0.28">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase Amplitude="0.3" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="MenuCanvas"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.0" To="1.0" Duration="0:0:0.22" />
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid Background="#10000000">
+        <!-- Floating notification pill -->
+        <Border x:Name="NotificationPill"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,40,0,0"
+                Background="#EE0F172A"
+                CornerRadius="20"
+                Padding="18,10"
+                BorderBrush="#4038BDF8"
+                BorderThickness="1"
+                Opacity="0"
+                IsHitTestVisible="False">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.5" Color="#000000" />
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="NotificationIcon" Text="✨" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                <TextBlock x:Name="NotificationText" Text="Дію успішно виконано" Foreground="White" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Radial Menu Canvas Root -->
+        <Canvas x:Name="OverlayCanvas">
+            <Canvas x:Name="MenuCanvas" RenderTransformOrigin="0.5,0.5">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform x:Name="MenuRootTransform" ScaleX="1.0" ScaleY="1.0" />
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+
+                <!-- Sectors Canvas container -->
+                <Canvas x:Name="SectorsHost" />
+
+                <!-- Center Hub -->
+                <Border x:Name="CenterHub"
+                        CornerRadius="100"
+                        Background="#EE0F172A"
+                        BorderBrush="#4D38BDF8"
+                        BorderThickness="2"
+                        Cursor="Hand"
+                        MouseDown="CenterHub_MouseDown">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="25" ShadowDepth="0" Color="#0284C7" Opacity="0.6" />
+                    </Border.Effect>
+
+                    <Grid Margin="12">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock x:Name="CenterFileIcon"
+                                       Text="📁"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,4" />
+                            <TextBlock x:Name="CenterFileName"
+                                       Text="Виберіть файл"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Foreground="#F8FAFC"
+                                       MaxWidth="100"
+                                       TextAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="CenterFileInfo"
+                                       Text="Halo"
+                                       FontSize="9"
+                                       Foreground="#94A3B8"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Canvas>
+        </Canvas>
+    </Grid>
+</Window>
