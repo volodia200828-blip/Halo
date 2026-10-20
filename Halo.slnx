@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="Halo.App/Halo.App.csproj" />
-  <Project Path="Halo.Core/Halo.Core.csproj" />
-  <Project Path="Halo.Tests/Halo.Tests.csproj" />
-</Solution>
