@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using Halo.Core.Models;
 
@@ -19,44 +20,60 @@ public class RadialDiscControl : Canvas
     private readonly TextBlock _hoveredActionLabel;
 
     private List<ActionItem> _actions = new();
-    private const double OuterRadius = 126;
-    private const double InnerRadius = 50;
+    private const double OuterRadius = 124;
+    private const double InnerRadius = 48;
 
     public event Action<ActionItem>? ActionHovered;
     public event Action<ActionItem>? ActionClicked;
 
     public RadialDiscControl()
     {
-        Width = 320;
-        Height = 320;
+        Width = 310;
+        Height = 325;
         ClipToBounds = false;
         HorizontalAlignment = HorizontalAlignment.Center;
         VerticalAlignment = VerticalAlignment.Center;
 
-        _slicesContainer = new Canvas { Width = 320, Height = 320 };
+        // Subtle ambient ring behind the disc
+        var ambientRing = new Ellipse
+        {
+            Width = OuterRadius * 2 + 24,
+            Height = OuterRadius * 2 + 24,
+            Fill = new SolidColorBrush(Color.FromArgb(80, 27, 27, 33)),
+            Stroke = new SolidColorBrush(Color.FromRgb(48, 48, 62)),
+            StrokeThickness = 1
+        };
+        SetLeft(ambientRing, 155 - (OuterRadius + 12));
+        SetTop(ambientRing, 150 - (OuterRadius + 12));
+        Children.Add(ambientRing);
+
+        _slicesContainer = new Canvas { Width = 310, Height = 300 };
         Children.Add(_slicesContainer);
 
-        // Center hub with neon glow
+        // Orbit-styled Center Hub
         _centerHub = new Border
         {
             Width = InnerRadius * 2 - 6,
             Height = InnerRadius * 2 - 6,
             CornerRadius = new CornerRadius(InnerRadius),
-            Background = new SolidColorBrush(Color.FromArgb(245, 11, 15, 25)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(0, 240, 255)),
-            BorderThickness = new Thickness(1.5),
-            Cursor = Cursors.Hand
-        };
-        _centerHub.Effect = new System.Windows.Media.Effects.DropShadowEffect
-        {
-            BlurRadius = 16,
-            Color = Color.FromRgb(0, 240, 255),
-            Opacity = 0.4,
-            ShadowDepth = 0
+            Background = new SolidColorBrush(Color.FromRgb(27, 27, 34)),
+            BorderBrush = new LinearGradientBrush(
+                Color.FromRgb(168, 85, 247),
+                Color.FromRgb(56, 189, 248),
+                45),
+            BorderThickness = new Thickness(2),
+            Cursor = Cursors.Hand,
+            Effect = new DropShadowEffect
+            {
+                BlurRadius = 18,
+                Color = Color.FromRgb(139, 92, 246),
+                Opacity = 0.35,
+                ShadowDepth = 0
+            }
         };
 
-        SetLeft(_centerHub, 160 - (InnerRadius * 2 - 6) / 2.0);
-        SetTop(_centerHub, 160 - (InnerRadius * 2 - 6) / 2.0);
+        SetLeft(_centerHub, 155 - (InnerRadius * 2 - 6) / 2.0);
+        SetTop(_centerHub, 150 - (InnerRadius * 2 - 6) / 2.0);
 
         var hubStack = new StackPanel
         {
@@ -66,8 +83,10 @@ public class RadialDiscControl : Canvas
 
         _centerIcon = new TextBlock
         {
-            Text = "⭕",
-            FontSize = 18,
+            Text = "◎",
+            FontSize = 20,
+            FontWeight = FontWeights.Bold,
+            Foreground = new SolidColorBrush(Color.FromRgb(167, 139, 250)),
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
@@ -75,8 +94,8 @@ public class RadialDiscControl : Canvas
         {
             Text = "Halo",
             FontSize = 11,
-            FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(Color.FromRgb(0, 240, 255)),
+            FontWeight = FontWeights.SemiBold,
+            Foreground = new SolidColorBrush(Color.FromRgb(242, 243, 247)),
             HorizontalAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0)
         };
@@ -90,16 +109,16 @@ public class RadialDiscControl : Canvas
         // Status description below the disc
         _hoveredActionLabel = new TextBlock
         {
-            Text = "Наведіть на сектор для огляду",
-            FontSize = 11.5,
+            Text = "Наведіть курсор на сектор",
+            FontSize = 12,
             FontWeight = FontWeights.Medium,
-            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            Foreground = new SolidColorBrush(Color.FromRgb(160, 163, 181)),
             HorizontalAlignment = HorizontalAlignment.Center,
             TextAlignment = TextAlignment.Center,
-            Width = 320
+            Width = 310
         };
         SetLeft(_hoveredActionLabel, 0);
-        SetTop(_hoveredActionLabel, 292);
+        SetTop(_hoveredActionLabel, 296);
         Children.Add(_hoveredActionLabel);
     }
 
@@ -123,10 +142,10 @@ public class RadialDiscControl : Canvas
         _hoveredActionLabel.Text = $"Активно секторів: {_actions.Count}";
 
         int count = _actions.Count;
-        double gapDeg = count > 1 ? 3.0 : 0;
+        double gapDeg = count > 1 ? 3.5 : 0;
         double totalGap = gapDeg * count;
         double sectorSpan = (360.0 - totalGap) / count;
-        Point center = new Point(160, 160);
+        Point center = new Point(155, 150);
 
         for (int i = 0; i < count; i++)
         {
@@ -136,8 +155,8 @@ public class RadialDiscControl : Canvas
 
             var path = new Path
             {
-                StrokeThickness = 1.0,
-                Stroke = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)),
+                StrokeThickness = 1.2,
+                Stroke = new SolidColorBrush(Color.FromRgb(58, 58, 74)),
                 Cursor = Cursors.Hand
             };
 
@@ -148,53 +167,52 @@ public class RadialDiscControl : Canvas
             }
             catch
             {
-                accentColor = Color.FromRgb(0, 240, 255);
+                accentColor = Color.FromRgb(139, 92, 246);
             }
 
             path.Fill = new LinearGradientBrush(
-                Color.FromArgb(170, 16, 23, 38),
-                Color.FromArgb(130, 10, 15, 26),
+                Color.FromRgb(46, 46, 58),
+                Color.FromRgb(35, 35, 45),
                 45);
 
             path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius, startAngle, endAngle);
 
-            // Icon on slice
             var mid = RadialGeometryHelper.GetRadialMidpoint(center, InnerRadius, OuterRadius, startAngle, endAngle);
             var iconBlock = new TextBlock
             {
                 Text = action.IconKey,
-                FontSize = 18,
+                FontSize = 17,
+                Foreground = new SolidColorBrush(Color.FromRgb(242, 243, 247)),
                 IsHitTestVisible = false
             };
             SetLeft(iconBlock, mid.X - 10);
-            SetTop(iconBlock, mid.Y - 12);
+            SetTop(iconBlock, mid.Y - 11);
 
-            // Hover effects
             path.MouseEnter += (s, e) =>
             {
                 path.Fill = new LinearGradientBrush(
-                    Color.FromArgb(230, accentColor.R, accentColor.G, accentColor.B),
-                    Color.FromArgb(180, (byte)Math.Min(255, accentColor.R + 40), (byte)Math.Min(255, accentColor.G + 40), (byte)Math.Min(255, accentColor.B + 40)),
+                    Color.FromArgb(235, accentColor.R, accentColor.G, accentColor.B),
+                    Color.FromArgb(190, (byte)Math.Max(0, accentColor.R - 30), (byte)Math.Max(0, accentColor.G - 30), (byte)Math.Max(0, accentColor.B - 10)),
                     45);
-                path.Stroke = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                path.StrokeThickness = 1.5;
-                path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius + 10, startAngle, endAngle);
-                _hoveredActionLabel.Text = $"{action.IconKey} {action.Title} — {action.Description}";
-                _hoveredActionLabel.Foreground = new SolidColorBrush(Color.FromRgb(248, 250, 252));
+                path.Stroke = new SolidColorBrush(Color.FromRgb(242, 243, 247));
+                path.StrokeThickness = 1.6;
+                path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius + 9, startAngle, endAngle);
+                _hoveredActionLabel.Text = $"{action.IconKey}  {action.Title} — {action.Description}";
+                _hoveredActionLabel.Foreground = new SolidColorBrush(Color.FromRgb(242, 243, 247));
                 ActionHovered?.Invoke(action);
             };
 
             path.MouseLeave += (s, e) =>
             {
                 path.Fill = new LinearGradientBrush(
-                    Color.FromArgb(170, 16, 23, 38),
-                    Color.FromArgb(130, 10, 15, 26),
+                    Color.FromRgb(46, 46, 58),
+                    Color.FromRgb(35, 35, 45),
                     45);
-                path.Stroke = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255));
-                path.StrokeThickness = 1.0;
+                path.Stroke = new SolidColorBrush(Color.FromRgb(58, 58, 74));
+                path.StrokeThickness = 1.2;
                 path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius, startAngle, endAngle);
                 _hoveredActionLabel.Text = $"Активно секторів: {_actions.Count}";
-                _hoveredActionLabel.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                _hoveredActionLabel.Foreground = new SolidColorBrush(Color.FromRgb(160, 163, 181));
             };
 
             path.MouseLeftButtonDown += (s, e) =>
