@@ -110,7 +110,7 @@ public partial class MainWindow : Window
     // ==========================================
     private void Nav_Checked(object sender, RoutedEventArgs e)
     {
-        if (ScreenMain == null) return;
+        if (ScreenMain == null || ScreenInput == null || ScreenRadial == null || ScreenPresets == null || ScreenFolders == null || ScreenSettings == null) return;
 
         ScreenMain.Visibility = Visibility.Collapsed;
         ScreenInput.Visibility = Visibility.Collapsed;
@@ -247,7 +247,7 @@ public partial class MainWindow : Window
     {
         var settings = SettingsService.Instance.Current;
         var current = settings.GlobalHotkey;
-        var input = Microsoft.VisualBasic.Interaction.InputBox("Введіть нову глобальну комбінацію (наприклад, Alt+Space або Ctrl+Shift+H):", "Зміна хоткею", current);
+        var input = CyberInputDialog.Prompt(this, "Введіть нову комбінацію клавіш:", current);
 
         if (!string.IsNullOrWhiteSpace(input))
         {
@@ -269,12 +269,14 @@ public partial class MainWindow : Window
 
     private void RadialCategoriesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (!IsLoaded) return;
         UpdateCategorySectors();
     }
 
     private void UpdateCategorySectors()
     {
         if (RadialCategoriesList?.SelectedItem is not ListBoxItem selected) return;
+        if (RadialActionsItemsControl == null || PreviewRadialDisc == null) return;
         var categoryTag = selected.Tag?.ToString() ?? "Image";
 
         var settings = SettingsService.Instance.Current;
@@ -341,7 +343,7 @@ public partial class MainWindow : Window
     // ==========================================
     private void BtnCreatePreset_Click(object sender, RoutedEventArgs e)
     {
-        var name = Microsoft.VisualBasic.Interaction.InputBox("Введіть назву нового шаблону (макросу):", "Новий шаблон", "Мій швидкий пресет");
+        var name = CyberInputDialog.Prompt(this, "Введіть назву нового шаблону (макросу):", "Мій швидкий пресет");
         if (!string.IsNullOrWhiteSpace(name))
         {
             var settings = SettingsService.Instance.Current;
