@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
 using Halo.App.Native;
 using Halo.App.Views;
 using Halo.Core.Models;
@@ -30,6 +32,7 @@ public partial class MainWindow : Window
     private ShelfWindow? _shelfWindow;
     private HotkeyHelper? _hotkeyHelper;
     private bool _gesturesPaused = false;
+    private bool _isRecordingHotkey = false;
 
     public MainWindow()
     {
@@ -42,7 +45,7 @@ public partial class MainWindow : Window
     {
         InitializeSubsystems();
         LoadRadialScreenData();
-        RefreshDashboardKPIs();
+        RefreshTelemetry();
     }
 
     private void InitializeSubsystems()
@@ -53,20 +56,16 @@ public partial class MainWindow : Window
 
         _shelfWindow = new ShelfWindow();
 
-        // Hotkey registration
         var helper = new System.Windows.Interop.WindowInteropHelper(this);
         _hotkeyHelper = new HotkeyHelper(helper.Handle);
         _hotkeyHelper.HotkeyPressed += OnGlobalHotkeyPressed;
 
         RegisterConfiguredHotkey();
-
-        // Start watched folders
         FolderWatcherService.Instance.Start();
 
-        // Listen for settings change
         SettingsService.Instance.SettingsChanged += s => Dispatcher.Invoke(() =>
         {
-            RefreshDashboardKPIs();
+            RefreshTelemetry();
             LoadRadialScreenData();
             LoadFoldersData();
         });
@@ -79,16 +78,16 @@ public partial class MainWindow : Window
         if (_hotkeyHelper == null || _gesturesPaused) return;
         var hotkeyStr = SettingsService.Instance.Current.GlobalHotkey;
         _hotkeyHelper.Register(hotkeyStr);
-        MainHotkeyText.Text = hotkeyStr;
+
+        if (QuickHotkeyDisplay != null) QuickHotkeyDisplay.Text = hotkeyStr;
+        if (HotkeyRecorderStatusText != null) HotkeyRecorderStatusText.Text = hotkeyStr;
     }
 
-    private void RefreshDashboardKPIs()
+    private void RefreshTelemetry()
     {
         var settings = SettingsService.Instance.Current;
-        var activeCount = settings.Actions.Count(a => a.IsEnabled);
-        MainActiveActionsText.Text = $"{activeCount} функцій";
-        MainWatchedFoldersText.Text = $"{settings.WatchedFolders.Count(w => w.IsEnabled)} правил";
-        MainHotkeyText.Text = settings.GlobalHotkey;
+        if (QuickHotkeyDisplay != null) QuickHotkeyDisplay.Text = settings.GlobalHotkey;
+        if (HotkeyRecorderStatusText != null) HotkeyRecorderStatusText.Text = settings.GlobalHotkey;
     }
 
     private void OnGlobalHotkeyPressed()
@@ -98,11 +97,31 @@ public partial class MainWindow : Window
         GetCursorPos(out var pt);
         var screenPoint = new Point(pt.X, pt.Y);
 
-        // Try to get selected files in Explorer
         var selected = ExplorerHelper.GetSelectedFiles();
         string? targetFile = selected.Count > 0 ? selected[0] : null;
 
         _radialWindow?.ShowAt(screenPoint, targetFile);
+    }
+
+    // ==========================================
+    // TITLEBAR WINDOW CONTROLS
+    // ==========================================
+    private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+        {
+            DragMove();
+        }
+    }
+
+    private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void BtnClose_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 
     // ==========================================
@@ -122,7 +141,7 @@ public partial class MainWindow : Window
         if (sender == NavMain)
         {
             ScreenMain.Visibility = Visibility.Visible;
-            RefreshDashboardKPIs();
+            RefreshTelemetry();
         }
         else if (sender == NavInput)
         {
@@ -148,35 +167,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private void BtnOpenSettingsScreen_Click(object sender, RoutedEventArgs e)
-    {
-        NavSettings.IsChecked = true;
-    }
-
-    private void BtnSupport_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Дякуємо за інтерес до підтримки Halo!\n\nПроєкт розвивається як сучасна незалежна українська утиліта для продуктивності.",
-            "Підтримати Halo", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
-
     // ==========================================
     // SCREEN 1: ГОЛОВНА
     // ==========================================
-    private void BtnPickFile_Click(object sender, RoutedEventArgs e)
-    {
-        var dialog = new OpenFileDialog
-        {
-            Title = "Виберіть файл для тестування Halo",
-            Filter = "Всі файли (*.*)|*.*|Зображення (*.png;*.jpg;*.webp)|*.png;*.jpg;*.webp"
-        };
-
-        if (dialog.ShowDialog() == true)
-        {
-            GetCursorPos(out var pt);
-            _radialWindow?.ShowAt(new Point(pt.X, pt.Y), dialog.FileName);
-        }
-    }
-
     private void BtnOpenHaloHere_Click(object sender, RoutedEventArgs e)
     {
         GetCursorPos(out var pt);
@@ -193,6 +186,26 @@ public partial class MainWindow : Window
         _shelfWindow.Activate();
     }
 
+    private void BtnJumpToRadial_Click(object sender, RoutedEventArgs e)
+    {
+        NavRadial.IsChecked = true;
+    }
+
+    private void BtnPickFile_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "Виберіть файл для виклику меню Halo",
+            Filter = "Всі файли (*.*)|*.*|Зображення (*.png;*.jpg;*.webp)|*.png;*.jpg;*.webp"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            GetCursorPos(out var pt);
+            _radialWindow?.ShowAt(new Point(pt.X, pt.Y), dialog.FileName);
+        }
+    }
+
     private void AddToShelf(string filePath)
     {
         if (_shelfWindow == null || !_shelfWindow.IsLoaded)
@@ -202,30 +215,8 @@ public partial class MainWindow : Window
         _shelfWindow.AddFile(filePath);
     }
 
-    private void DropZone_DragOver(object sender, DragEventArgs e)
-    {
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
-        {
-            e.Effects = DragDropEffects.Copy;
-            e.Handled = true;
-        }
-    }
-
-    private void DropZone_Drop(object sender, DragEventArgs e)
-    {
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
-        {
-            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (files != null && files.Length > 0)
-            {
-                GetCursorPos(out var pt);
-                _radialWindow?.ShowAt(new Point(pt.X, pt.Y), files[0]);
-            }
-        }
-    }
-
     // ==========================================
-    // SCREEN 2: ЖЕСТИ Й КЛАВІШІ
+    // SCREEN 2: ХОТКЕЙ ТА ЖЕСТИ (KEY RECORDER)
     // ==========================================
     private void CheckPauseGestures_Click(object sender, RoutedEventArgs e)
     {
@@ -233,28 +224,94 @@ public partial class MainWindow : Window
         if (_gesturesPaused)
         {
             _hotkeyHelper?.Unregister();
-            MainHotkeyText.Text = "Призупинено";
-            MainHotkeyText.Foreground = System.Windows.Media.Brushes.Gray;
+            if (HotkeyRecorderStatusText != null) HotkeyRecorderStatusText.Text = "Призупинено";
         }
         else
         {
             RegisterConfiguredHotkey();
-            MainHotkeyText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(56, 189, 248));
         }
     }
 
-    private void BtnChangeHotkey_Click(object sender, RoutedEventArgs e)
+    private void BtnRecordHotkey_Click(object sender, RoutedEventArgs e)
     {
-        var settings = SettingsService.Instance.Current;
-        var current = settings.GlobalHotkey;
-        var input = CyberInputDialog.Prompt(this, "Введіть нову комбінацію клавіш:", current);
-
-        if (!string.IsNullOrWhiteSpace(input))
+        if (_isRecordingHotkey)
         {
-            settings.GlobalHotkey = input.Trim();
-            SettingsService.Instance.SaveSettings(settings);
-            RegisterConfiguredHotkey();
+            StopRecordingHotkey();
+            return;
         }
+
+        _isRecordingHotkey = true;
+        HotkeyRecorderStatusText.Text = "Натисніть клавіші...";
+        HotkeyRecorderStatusText.Foreground = new SolidColorBrush(Color.FromRgb(248, 113, 113));
+        HotkeyRecorderHint.Text = "Натисніть комбінацію (наприклад Alt+Space або Ctrl+Shift+H). Esc для скасування.";
+        BtnRecordHotkey.Content = "Скасувати";
+
+        HotkeyRecorderCard.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 240, 255));
+        HotkeyRecorderCard.Effect = new DropShadowEffect
+        {
+            BlurRadius = 18,
+            Color = Color.FromRgb(0, 240, 255),
+            Opacity = 0.5,
+            ShadowDepth = 0
+        };
+    }
+
+    private void StopRecordingHotkey()
+    {
+        _isRecordingHotkey = false;
+        HotkeyRecorderStatusText.Foreground = new SolidColorBrush(Color.FromRgb(0, 240, 255));
+        HotkeyRecorderHint.Text = "Натисніть «Записати» та натисніть комбінацію на клавіатурі";
+        BtnRecordHotkey.Content = "⏺️  Записати комбінацію";
+
+        HotkeyRecorderCard.BorderBrush = (Brush)FindResource("GlassBorderLight");
+        HotkeyRecorderCard.Effect = null;
+
+        RegisterConfiguredHotkey();
+    }
+
+    private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (!_isRecordingHotkey) return;
+
+        e.Handled = true;
+
+        if (e.Key == Key.Escape)
+        {
+            StopRecordingHotkey();
+            return;
+        }
+
+        // Ignore standalone modifier presses
+        if (e.Key == Key.LeftAlt || e.Key == Key.RightAlt ||
+            e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl ||
+            e.Key == Key.LeftShift || e.Key == Key.RightShift ||
+            e.Key == Key.LWin || e.Key == Key.RWin ||
+            e.Key == Key.System)
+        {
+            return;
+        }
+
+        var key = e.Key == Key.System ? e.SystemKey : e.Key;
+        var parts = new List<string>();
+
+        if ((Keyboard.Modifiers & ModifierKeys.Control) != 0) parts.Add("Ctrl");
+        if ((Keyboard.Modifiers & ModifierKeys.Alt) != 0) parts.Add("Alt");
+        if ((Keyboard.Modifiers & ModifierKeys.Shift) != 0) parts.Add("Shift");
+        if ((Keyboard.Modifiers & ModifierKeys.Windows) != 0) parts.Add("Win");
+
+        if (parts.Count == 0)
+        {
+            parts.Add("Alt"); // Default modifier if none pressed
+        }
+
+        parts.Add(key.ToString());
+        var newHotkey = string.Join("+", parts);
+
+        var settings = SettingsService.Instance.Current;
+        settings.GlobalHotkey = newHotkey;
+        SettingsService.Instance.SaveSettings(settings);
+
+        StopRecordingHotkey();
     }
 
     // ==========================================
@@ -277,6 +334,7 @@ public partial class MainWindow : Window
     {
         if (RadialCategoriesList?.SelectedItem is not ListBoxItem selected) return;
         if (RadialActionsItemsControl == null || PreviewRadialDisc == null) return;
+
         var categoryTag = selected.Tag?.ToString() ?? "Image";
 
         var settings = SettingsService.Instance.Current;
@@ -334,7 +392,7 @@ public partial class MainWindow : Window
             SettingsService.Instance.SaveSettings();
             UpdateCategorySectors();
             UpdateCategoryBadges();
-            RefreshDashboardKPIs();
+            RefreshTelemetry();
         }
     }
 
@@ -353,7 +411,7 @@ public partial class MainWindow : Window
                 Title = name.Trim(),
                 Description = "Користувацький шаблон швидкої обробки",
                 IconKey = "⚡",
-                AccentColor = "#38BDF8",
+                AccentColor = "#00F0FF",
                 Category = ActionCategory.CustomMacro,
                 SupportedFileTypes = new List<FileTypeCategory> { FileTypeCategory.Generic },
                 IsEnabled = true,
@@ -363,8 +421,13 @@ public partial class MainWindow : Window
 
             settings.Actions.Add(newAction);
             SettingsService.Instance.SaveSettings(settings);
-            MessageBox.Show($"Шаблон «{name}» успішно збережено!", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Шаблон «{name}» успішно додано!", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+    }
+
+    private void BtnTestPreset_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBox.Show("Пресет готовий до виконання. Виберіть файл або відкрийте меню Halo над потрібним файлом.", "Halo", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     // ==========================================
@@ -382,7 +445,7 @@ public partial class MainWindow : Window
     {
         var dialog = new OpenFolderDialog
         {
-            Title = "Виберіть папку для автоматичного моніторингу"
+            Title = "Виберіть папку для автоматичного фонового моніторингу"
         };
 
         if (dialog.ShowDialog() == true)
@@ -396,7 +459,7 @@ public partial class MainWindow : Window
         var folder = QuickFolderInput.Text.Trim();
         if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
         {
-            MessageBox.Show("Будь ласка, оберіть дійсну папку на диску.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Будь ласка, вкажіть дійсну існуючу папку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -414,7 +477,6 @@ public partial class MainWindow : Window
         SettingsService.Instance.SaveSettings(settings);
 
         LoadFoldersData();
-        RefreshDashboardKPIs();
         FolderWatcherService.Instance.Start();
 
         MessageBox.Show($"Папку «{Path.GetFileName(folder)}» додано до автоматичного моніторингу!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -429,7 +491,6 @@ public partial class MainWindow : Window
             SettingsService.Instance.SaveSettings(settings);
 
             LoadFoldersData();
-            RefreshDashboardKPIs();
             FolderWatcherService.Instance.Start();
         }
     }
@@ -440,7 +501,6 @@ public partial class MainWindow : Window
         {
             rule.IsEnabled = cb.IsChecked ?? true;
             SettingsService.Instance.SaveSettings();
-            RefreshDashboardKPIs();
             FolderWatcherService.Instance.Start();
         }
     }

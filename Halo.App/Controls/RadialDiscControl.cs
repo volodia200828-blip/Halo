@@ -19,8 +19,8 @@ public class RadialDiscControl : Canvas
     private readonly TextBlock _hoveredActionLabel;
 
     private List<ActionItem> _actions = new();
-    private double _outerRadius = 130;
-    private double _innerRadius = 52;
+    private const double OuterRadius = 126;
+    private const double InnerRadius = 50;
 
     public event Action<ActionItem>? ActionHovered;
     public event Action<ActionItem>? ActionClicked;
@@ -30,24 +30,33 @@ public class RadialDiscControl : Canvas
         Width = 320;
         Height = 320;
         ClipToBounds = false;
+        HorizontalAlignment = HorizontalAlignment.Center;
+        VerticalAlignment = VerticalAlignment.Center;
 
         _slicesContainer = new Canvas { Width = 320, Height = 320 };
         Children.Add(_slicesContainer);
 
-        // Center hub
+        // Center hub with neon glow
         _centerHub = new Border
         {
-            Width = _innerRadius * 2 - 8,
-            Height = _innerRadius * 2 - 8,
-            CornerRadius = new CornerRadius(_innerRadius),
-            Background = new SolidColorBrush(Color.FromArgb(240, 11, 15, 25)),
-            BorderBrush = new SolidColorBrush(Color.FromArgb(160, 56, 189, 248)),
-            BorderThickness = new Thickness(2),
+            Width = InnerRadius * 2 - 6,
+            Height = InnerRadius * 2 - 6,
+            CornerRadius = new CornerRadius(InnerRadius),
+            Background = new SolidColorBrush(Color.FromArgb(245, 11, 15, 25)),
+            BorderBrush = new SolidColorBrush(Color.FromRgb(0, 240, 255)),
+            BorderThickness = new Thickness(1.5),
             Cursor = Cursors.Hand
         };
+        _centerHub.Effect = new System.Windows.Media.Effects.DropShadowEffect
+        {
+            BlurRadius = 16,
+            Color = Color.FromRgb(0, 240, 255),
+            Opacity = 0.4,
+            ShadowDepth = 0
+        };
 
-        SetLeft(_centerHub, 160 - (_innerRadius * 2 - 8) / 2.0);
-        SetTop(_centerHub, 160 - (_innerRadius * 2 - 8) / 2.0);
+        SetLeft(_centerHub, 160 - (InnerRadius * 2 - 6) / 2.0);
+        SetTop(_centerHub, 160 - (InnerRadius * 2 - 6) / 2.0);
 
         var hubStack = new StackPanel
         {
@@ -58,16 +67,16 @@ public class RadialDiscControl : Canvas
         _centerIcon = new TextBlock
         {
             Text = "⭕",
-            FontSize = 20,
+            FontSize = 18,
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
         _centerLabel = new TextBlock
         {
             Text = "Halo",
-            FontSize = 10,
+            FontSize = 11,
             FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(Color.FromRgb(56, 189, 248)),
+            Foreground = new SolidColorBrush(Color.FromRgb(0, 240, 255)),
             HorizontalAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0)
         };
@@ -78,18 +87,19 @@ public class RadialDiscControl : Canvas
 
         Children.Add(_centerHub);
 
-        // Hovered action label at the bottom
+        // Status description below the disc
         _hoveredActionLabel = new TextBlock
         {
             Text = "Наведіть на сектор для огляду",
-            FontSize = 12,
+            FontSize = 11.5,
+            FontWeight = FontWeights.Medium,
             Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
             HorizontalAlignment = HorizontalAlignment.Center,
             TextAlignment = TextAlignment.Center,
             Width = 320
         };
         SetLeft(_hoveredActionLabel, 0);
-        SetTop(_hoveredActionLabel, 290);
+        SetTop(_hoveredActionLabel, 292);
         Children.Add(_hoveredActionLabel);
     }
 
@@ -126,8 +136,8 @@ public class RadialDiscControl : Canvas
 
             var path = new Path
             {
-                StrokeThickness = 1.2,
-                Stroke = new SolidColorBrush(Color.FromArgb(60, 255, 255, 255)),
+                StrokeThickness = 1.0,
+                Stroke = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255)),
                 Cursor = Cursors.Hand
             };
 
@@ -138,18 +148,18 @@ public class RadialDiscControl : Canvas
             }
             catch
             {
-                accentColor = Color.FromRgb(56, 189, 248);
+                accentColor = Color.FromRgb(0, 240, 255);
             }
 
             path.Fill = new LinearGradientBrush(
-                Color.FromArgb(170, 19, 28, 46),
-                Color.FromArgb(140, 15, 23, 42),
+                Color.FromArgb(170, 16, 23, 38),
+                Color.FromArgb(130, 10, 15, 26),
                 45);
 
-            path.Data = RadialGeometryHelper.CreatePieSlice(center, _innerRadius, _outerRadius, startAngle, endAngle);
+            path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius, startAngle, endAngle);
 
             // Icon on slice
-            var mid = RadialGeometryHelper.GetRadialMidpoint(center, _innerRadius, _outerRadius, startAngle, endAngle);
+            var mid = RadialGeometryHelper.GetRadialMidpoint(center, InnerRadius, OuterRadius, startAngle, endAngle);
             var iconBlock = new TextBlock
             {
                 Text = action.IconKey,
@@ -163,12 +173,12 @@ public class RadialDiscControl : Canvas
             path.MouseEnter += (s, e) =>
             {
                 path.Fill = new LinearGradientBrush(
-                    Color.FromArgb(220, accentColor.R, accentColor.G, accentColor.B),
+                    Color.FromArgb(230, accentColor.R, accentColor.G, accentColor.B),
                     Color.FromArgb(180, (byte)Math.Min(255, accentColor.R + 40), (byte)Math.Min(255, accentColor.G + 40), (byte)Math.Min(255, accentColor.B + 40)),
                     45);
                 path.Stroke = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                path.StrokeThickness = 2.0;
-                path.Data = RadialGeometryHelper.CreatePieSlice(center, _innerRadius, _outerRadius + 10, startAngle, endAngle);
+                path.StrokeThickness = 1.5;
+                path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius + 10, startAngle, endAngle);
                 _hoveredActionLabel.Text = $"{action.IconKey} {action.Title} — {action.Description}";
                 _hoveredActionLabel.Foreground = new SolidColorBrush(Color.FromRgb(248, 250, 252));
                 ActionHovered?.Invoke(action);
@@ -177,12 +187,12 @@ public class RadialDiscControl : Canvas
             path.MouseLeave += (s, e) =>
             {
                 path.Fill = new LinearGradientBrush(
-                    Color.FromArgb(170, 19, 28, 46),
-                    Color.FromArgb(140, 15, 23, 42),
+                    Color.FromArgb(170, 16, 23, 38),
+                    Color.FromArgb(130, 10, 15, 26),
                     45);
-                path.Stroke = new SolidColorBrush(Color.FromArgb(60, 255, 255, 255));
-                path.StrokeThickness = 1.2;
-                path.Data = RadialGeometryHelper.CreatePieSlice(center, _innerRadius, _outerRadius, startAngle, endAngle);
+                path.Stroke = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255));
+                path.StrokeThickness = 1.0;
+                path.Data = RadialGeometryHelper.CreatePieSlice(center, InnerRadius, OuterRadius, startAngle, endAngle);
                 _hoveredActionLabel.Text = $"Активно секторів: {_actions.Count}";
                 _hoveredActionLabel.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
             };
