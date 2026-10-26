@@ -5,7 +5,10 @@ public enum FileTypeCategory
     Generic,
     Image,
     Video,
-    Audio,
+    Pdf,
     Document,
+    Presentation,
+    Spreadsheet,
+    Archive,
     Folder
 }

@@ -1,0 +1,225 @@
+<Window x:Class="Halo.App.Views.VideoTrimWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Halo — Відеоредактор"
+        Width="740" Height="650"
+        MinWidth="600" MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Icon="pack://application:,,,/Resources/avatar.png"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Foreground="{DynamicResource OrbitTextPrimary}"
+        FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Grid Margin="14">
+        <!-- Тінь вікна -->
+        <Border Background="{DynamicResource OrbitWindowBgBrush}" CornerRadius="18">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="24" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.55" />
+            </Border.Effect>
+        </Border>
+
+        <!-- Основна картка вікна -->
+        <Border Background="{DynamicResource OrbitWindowBgBrush}"
+                BorderBrush="{DynamicResource OrbitCardBorderBrush}"
+                BorderThickness="1.5"
+                CornerRadius="18"
+                Padding="22">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Заголовок вікна -->
+                <Grid Grid.Row="0" Margin="0,0,0,14" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Width="38" Height="38" CornerRadius="11" BorderBrush="{DynamicResource OrbitPurpleLightBrush}" BorderThickness="1.5" ClipToBounds="True" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <Image Source="pack://application:,,,/Resources/avatar.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtWindowTitle" Text="Обрізка та редагування відео" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="TxtVideoFileName" Text="Назва файлу..." FontSize="11.5" Foreground="{DynamicResource OrbitTextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+                    </StackPanel>
+
+                    <Button x:Name="BtnTopClose" Grid.Column="2" Content="✕" Width="30" Height="30" Padding="0" Style="{StaticResource OrbitSecondaryButton}" Click="BtnClose_Click" />
+                </Grid>
+
+                <!-- Блок відеоплеєра -->
+                <Border Grid.Row="1" Background="#0C0C10" BorderBrush="{DynamicResource OrbitSubtleBorderBrush}" BorderThickness="1" CornerRadius="12" ClipToBounds="True" Margin="0,0,0,12">
+                    <Grid>
+                        <MediaElement x:Name="VideoPlayer"
+                                      LoadedBehavior="Manual"
+                                      UnloadedBehavior="Manual"
+                                      Stretch="Uniform"
+                                      MediaOpened="VideoPlayer_MediaOpened"
+                                      MediaEnded="VideoPlayer_MediaEnded"
+                                      MouseDown="VideoPlayer_MouseDown" />
+
+                        <!-- Оверлей при паузі/завантаженні -->
+                        <Border x:Name="PlayOverlay" Background="#40000000" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="60" CornerRadius="30" Cursor="Hand" MouseLeftButtonDown="BtnPlayPause_Click" Visibility="Collapsed">
+                            <TextBlock Text="▶" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4,0,0,0" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Панель керування відтворенням та часова шкала -->
+                <StackPanel Grid.Row="2" Margin="0,0,0,12">
+                    <!-- 1. Таймлайн / Повзунок перемотування (Seek) -->
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Slider x:Name="SeekSlider" Grid.Column="0" Minimum="0" Maximum="100" Value="0" VerticalAlignment="Center"
+                                PreviewMouseDown="SeekSlider_PreviewMouseDown"
+                                PreviewMouseUp="SeekSlider_PreviewMouseUp"
+                                ValueChanged="SeekSlider_ValueChanged" />
+
+                        <TextBlock x:Name="TxtCurrentPlaybackTime" Grid.Column="1" Text="00:00:00 / 00:00:00" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitTextSecondary}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <!-- 2. Повзунки вибору діапазону прямо на рядку запису -->
+                    <Border Background="{DynamicResource OrbitRecessedBgBrush}" BorderBrush="{DynamicResource OrbitSubtleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="0,0,0,8">
+                        <StackPanel>
+                            <!-- Рядок Start: Початок кліпу -->
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="65" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource OrbitCyanBrush}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="LblTrackStart" Text="▶ Початок кліпу:" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitCyanBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Slider x:Name="TrimStartSlider" Grid.Column="1" Minimum="0" Maximum="100" Value="0" VerticalAlignment="Center"
+                                        ValueChanged="TrimStartSlider_ValueChanged" />
+                                <TextBlock x:Name="TxtTrimStartSeconds" Grid.Column="2" Text="0.0 с" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitCyanBrush}" Margin="8,0,0,0" VerticalAlignment="Center" TextAlignment="Right" />
+                            </Grid>
+
+                            <!-- Рядок End: Кінець кліпу -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="135" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="65" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource OrbitAmberLightBrush}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="LblTrackEnd" Text="⏹ Кінець кліпу:" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitAmberLightBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Slider x:Name="TrimEndSlider" Grid.Column="1" Minimum="0" Maximum="100" Value="0" VerticalAlignment="Center"
+                                        ValueChanged="TrimEndSlider_ValueChanged" />
+                                <TextBlock x:Name="TxtTrimEndSeconds" Grid.Column="2" Text="15.0 с" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitAmberLightBrush}" Margin="8,0,0,0" VerticalAlignment="Center" TextAlignment="Right" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Кнопки керування відтворенням -->
+                    <DockPanel Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                            <Button x:Name="BtnPlayPause" Content="▶ Відтворити" Style="{StaticResource OrbitSecondaryButton}" Padding="12,5" Margin="0,0,8,0" Click="BtnPlayPause_Click" />
+                            <Button x:Name="BtnMuteToggle" Content="🔊 Звук" Style="{StaticResource OrbitSecondaryButton}" Padding="10,5" Margin="0,0,8,0" Click="BtnMuteToggle_Click" />
+                            <Button x:Name="BtnJumpStart" Content="⏮ На початок" Style="{StaticResource OrbitSecondaryButton}" Padding="10,5" Margin="0,0,8,0" Click="BtnJumpStart_Click" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                            <Button x:Name="BtnPreset15s" Content="+15 сек" Style="{StaticResource OrbitSecondaryButton}" Padding="8,4" FontSize="11" Margin="0,0,6,0" Click="BtnPreset15s_Click" />
+                            <Button x:Name="BtnPreset30s" Content="+30 сек" Style="{StaticResource OrbitSecondaryButton}" Padding="8,4" FontSize="11" Margin="0,0,6,0" Click="BtnPreset30s_Click" />
+                            <Button x:Name="BtnPreset60s" Content="+60 сек" Style="{StaticResource OrbitSecondaryButton}" Padding="8,4" FontSize="11" Margin="0,0,6,0" Click="BtnPreset60s_Click" />
+                            <Button x:Name="BtnPresetFull" Content="Усе відео" Style="{StaticResource OrbitSecondaryButton}" Padding="8,4" FontSize="11" Click="BtnPresetFull_Click" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Картка точного вибору інтервалу обрізки -->
+                    <Border Style="{StaticResource OrbitCardStyle}" Padding="14,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Початок фрагмента -->
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock x:Name="LblStartTime" Text="Початок кліпу (гг:хх:сс):" FontSize="11.5" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,0,0,4" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="TxtStartTime" Grid.Column="0" Text="00:00:00" Style="{StaticResource OrbitTextBoxStyle}" TextChanged="TimeInputs_Changed" />
+                                    <Button x:Name="BtnSetCurrentAsStart" Grid.Column="1" Content="⏱ Поточний" Style="{StaticResource OrbitSecondaryButton}" Padding="8,4" Margin="6,0,0,0" FontSize="11" Click="BtnSetCurrentAsStart_Click" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Розділювач -->
+                            <Border Grid.Column="1" Width="1" Background="{DynamicResource OrbitCardBorderBrush}" Margin="6,2" />
+
+                            <!-- Кінець фрагмента -->
+                            <StackPanel Grid.Column="2" Margin="8,0,0,0">
+                                <TextBlock x:Name="LblEndTime" Text="Кінець кліпу (гг:хх:сс):" FontSize="11.5" Foreground="{DynamicResource OrbitTextSecondary}" Margin="0,0,0,4" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="TxtEndTime" Grid.Column="0" Text="00:00:15" Style="{StaticResource OrbitTextBoxStyle}" TextChanged="TimeInputs_Changed" />
+                                    <Button x:Name="BtnSetCurrentAsEnd" Grid.Column="1" Content="⏱ Поточний" Style="{StaticResource OrbitSecondaryButton}" Padding="8,4" Margin="6,0,0,0" FontSize="11" Click="BtnSetCurrentAsEnd_Click" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Нижня панель дій: статус, прогрес, скасувати, обрізати -->
+                <StackPanel Grid.Row="3" Margin="0,4,0,0">
+                    <!-- Індикатор прогресу обрізки з часом очікування -->
+                    <Border x:Name="TrimProgressCard" Background="{DynamicResource OrbitRecessedBgBrush}" BorderBrush="{DynamicResource OrbitCyanBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,10" Visibility="Collapsed">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,6">
+                                <TextBlock x:Name="TxtTrimProgressStatus" Text="Триває безвтратна обрізка відео..." FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource OrbitCyanBrush}" />
+                                <TextBlock x:Name="TxtTrimProgressRemaining" DockPanel.Dock="Right" HorizontalAlignment="Right" Text="Залишилось: ~3 сек" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitAmberLightBrush}" />
+                            </DockPanel>
+                            <ProgressBar x:Name="TrimProgressBar" Height="6" Maximum="100" Value="0"
+                                         Background="{DynamicResource OrbitRecessedBgBrush}"
+                                         Foreground="{DynamicResource OrbitCyanBrush}"
+                                         BorderThickness="0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock x:Name="TxtTrimDuration" Text="Тривалість фрагмента: 15.0 сек" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource OrbitAmberLightBrush}" />
+                            <TextBlock x:Name="TxtTrimHint" Text="FFmpeg виконає миттєву безвтратну обрізку вибраного діапазону" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button x:Name="BtnCancel" Content="Скасувати" Style="{StaticResource OrbitSecondaryButton}" Padding="16,8" Margin="0,0,10,0" Click="BtnClose_Click" />
+                            <Button x:Name="BtnTrimExecute" Content="✂️  Обрізати відео" Style="{StaticResource OrbitPrimaryButton}" Padding="18,8" Click="BtnTrimExecute_Click" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

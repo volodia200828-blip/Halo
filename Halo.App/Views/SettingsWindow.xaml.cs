@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Halo.App.Services;
 using Halo.Core.Models;
 using Halo.Core.Services;
 
@@ -12,11 +13,14 @@ namespace Halo.App.Views;
 public partial class SettingsWindow : Window
 {
     private List<ActionItem> _workingActions = new();
+    private bool _isInitializing = true;
 
     public SettingsWindow()
     {
+        _isInitializing = true;
         InitializeComponent();
         LoadCurrentSettings();
+        _isInitializing = false;
     }
 
     private void LoadCurrentSettings()
@@ -31,7 +35,12 @@ public partial class SettingsWindow : Window
         AutoHideCheck.IsChecked = settings.AutoHideOnAction;
         HotkeyTextBox.Text = settings.GlobalHotkey;
 
-        ThemeCombo.SelectedIndex = settings.Theme == "Light" ? 1 : 0;
+        ThemeCombo.SelectedIndex = settings.Theme switch
+        {
+            "Indigo" => 1,
+            "Light" => 2,
+            _ => 0
+        };
 
         WatchedFoldersControl.ItemsSource = null;
         WatchedFoldersControl.ItemsSource = settings.WatchedFolders;
@@ -39,6 +48,7 @@ public partial class SettingsWindow : Window
 
     private void RefreshActionsList()
     {
+        if (_isInitializing || _workingActions == null || FilterCategoryCombo == null || ActionsItemsControl == null) return;
         int filterIndex = FilterCategoryCombo.SelectedIndex;
         var filtered = _workingActions.AsEnumerable();
 
@@ -74,6 +84,7 @@ public partial class SettingsWindow : Window
 
     private void FilterCategoryCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_isInitializing) return;
         RefreshActionsList();
     }
 
@@ -206,9 +217,16 @@ public partial class SettingsWindow : Window
 
     private void ThemeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (ThemeCombo == null) return;
+        if (_isInitializing || ThemeCombo == null) return;
         var settings = SettingsService.Instance.Current;
-        settings.Theme = ThemeCombo.SelectedIndex == 1 ? "Light" : "Dark";
+        string newTheme = ThemeCombo.SelectedIndex switch
+        {
+            1 => "Indigo",
+            2 => "Light",
+            _ => "Dark"
+        };
+        settings.Theme = newTheme;
+        ThemeManager.Instance.ApplyTheme(newTheme);
         SettingsService.Instance.SaveSettings(settings);
     }
 

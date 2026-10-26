@@ -5,7 +5,7 @@ namespace Halo.Core.Models;
 public class AppSettings
 {
     public string Theme { get; set; } = "Dark"; // "Dark", "Indigo", "Light"
-    public string Language { get; set; } = "uk"; // "uk", "en", "pl"
+    public string Language { get; set; } = "uk"; // "uk", "en"
     public double MenuRadius { get; set; } = 175;
     public double InnerRadius { get; set; } = 66;
     public int AnimationDurationMs { get; set; } = 260;

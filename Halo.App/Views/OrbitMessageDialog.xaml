@@ -1,0 +1,111 @@
+<Window x:Class="Halo.App.Views.OrbitMessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Halo"
+        Height="250" Width="520"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ResizeMode="NoResize"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        Foreground="{DynamicResource OrbitTextPrimary}"
+        FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
+        Icon="pack://application:,,,/Resources/avatar.png"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Grid Margin="12">
+        <!-- Тінь вікна -->
+        <Border Background="{DynamicResource OrbitWindowBgBrush}"
+                CornerRadius="16">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.5" />
+            </Border.Effect>
+        </Border>
+
+        <!-- Основна картка діалогу -->
+        <Border Background="{DynamicResource OrbitWindowBgBrush}"
+                BorderBrush="{DynamicResource OrbitCardBorderBrush}"
+                BorderThickness="1.5"
+                CornerRadius="16"
+                Padding="22">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Заголовок діалогу -->
+                <Grid Grid.Row="0" Margin="0,0,0,14" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="10" BorderBrush="{DynamicResource OrbitPurpleLightBrush}" BorderThickness="1.5" ClipToBounds="True" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <Image Source="pack://application:,,,/Resources/avatar.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock x:Name="DialogTitleBlock" Text="Відстеження папок Halo" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource OrbitTextPrimary}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="DialogSubBlock" Text="Сповіщення системи" FontSize="11" Foreground="{DynamicResource OrbitTextMuted}" Margin="0,1,0,0" />
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Content="✕" Width="28" Height="28" Padding="0"
+                            Style="{StaticResource OrbitSecondaryButton}"
+                            Click="BtnClose_Click" />
+                </Grid>
+
+                <!-- Текст повідомлення -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
+                    <TextBlock x:Name="DialogMessageBlock"
+                               Text="Повідомлення"
+                               FontSize="13"
+                               Foreground="{DynamicResource OrbitTextSecondary}"
+                               LineHeight="19"
+                               TextWrapping="Wrap" />
+                </ScrollViewer>
+
+                <!-- Кнопки закриття та швидких дій -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="BtnPlayClip"
+                            Content="▶  Переглянути кліп"
+                            Style="{StaticResource OrbitPrimaryButton}"
+                            Padding="14,8"
+                            FontSize="12"
+                            Margin="0,0,8,0"
+                            Visibility="Collapsed"
+                            Click="BtnPlayClip_Click" />
+                    <Button x:Name="BtnRevealFolder"
+                            Content="📂  Перейти до файлу"
+                            Style="{StaticResource OrbitSecondaryButton}"
+                            Padding="14,8"
+                            FontSize="12"
+                            Margin="0,0,8,0"
+                            Visibility="Collapsed"
+                            Click="BtnRevealFolder_Click" />
+                    <Button x:Name="BtnCancel"
+                            Content="Скасувати"
+                            Style="{StaticResource OrbitSecondaryButton}"
+                            Padding="16,8"
+                            FontSize="12.5"
+                            Margin="0,0,8,0"
+                            Visibility="Collapsed"
+                            Click="BtnCancel_Click" />
+                    <Button x:Name="BtnOk"
+                            Content="Зрозуміло"
+                            Style="{StaticResource OrbitSecondaryButton}"
+                            Padding="20,8"
+                            FontSize="12.5"
+                            Click="BtnOk_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

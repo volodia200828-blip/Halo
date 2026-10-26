@@ -7,48 +7,49 @@
         Background="Transparent"
         Topmost="True"
         ShowInTaskbar="False"
-        WindowState="Maximized"
-        WindowStartupLocation="CenterScreen"
+        WindowState="Normal"
+        ResizeMode="NoResize"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
+        Foreground="#F2F3F7"
+        PreviewKeyDown="Window_PreviewKeyDown"
         KeyDown="Window_KeyDown"
         MouseDown="Window_MouseDown"
         AllowDrop="True"
         Drop="Window_Drop"
+        Icon="pack://application:,,,/Resources/avatar.png"
         DragOver="Window_DragOver">
 
     <Window.Resources>
         <Storyboard x:Key="EntranceAnimation">
             <DoubleAnimation Storyboard.TargetName="MenuRootTransform"
                              Storyboard.TargetProperty="ScaleX"
-                             From="0.65" To="1.0" Duration="0:0:0.22">
+                             From="0.95" To="1.0" Duration="0:0:0.10">
                 <DoubleAnimation.EasingFunction>
                     <CubicEase EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="MenuRootTransform"
                              Storyboard.TargetProperty="ScaleY"
-                             From="0.65" To="1.0" Duration="0:0:0.22">
+                             From="0.95" To="1.0" Duration="0:0:0.10">
                 <DoubleAnimation.EasingFunction>
                     <CubicEase EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="MenuCanvas"
-                             Storyboard.TargetProperty="Opacity"
-                             From="0.0" To="1.0" Duration="0:0:0.18" />
         </Storyboard>
     </Window.Resources>
 
-    <Grid Background="#2409090D">
-        <!-- Спливаюча капсула сповіщення в стилі Orbit (Тінь на окремому фоновому шарі, текст чіткий!) -->
+    <Grid x:Name="OverlayRoot" Background="#2409090D">
+        <!-- Спливаюча капсула сповіщення в стилі Orbit -->
         <Grid x:Name="NotificationPill"
               HorizontalAlignment="Center"
               VerticalAlignment="Top"
               Margin="0,38,0,0"
               Opacity="0"
-              IsHitTestVisible="False">
+              IsHitTestVisible="False"
+              Panel.ZIndex="10">
             <Border Background="#282832"
                     CornerRadius="14"
                     Effect="{StaticResource OrbitCardShadow}" />
@@ -66,12 +67,135 @@
 
         <!-- Radial Menu Canvas Root -->
         <Canvas x:Name="OverlayCanvas">
-            <Canvas x:Name="MenuCanvas" RenderTransformOrigin="0.5,0.5">
+            <Canvas x:Name="MenuCanvas" RenderTransformOrigin="0.5,0.5" Opacity="1">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform x:Name="MenuRootTransform" ScaleX="1.0" ScaleY="1.0" />
                     </TransformGroup>
                 </Canvas.RenderTransform>
+
+                <!-- Фіксований центрований контейнер для верхньої панелі режимів (Shift | Ctrl | Alt) -->
+                <Grid x:Name="TopModeContainer"
+                      Width="760"
+                      Panel.ZIndex="5">
+                    <Border x:Name="ModeSwitcherPill"
+                            HorizontalAlignment="Center"
+                            Background="#F21A1A24"
+                            BorderBrush="#3E3E52"
+                            BorderThickness="1.2"
+                            CornerRadius="14"
+                            Padding="5"
+                            MouseDown="ModeSwitcherPill_MouseDown">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Режим 1: Конвертація (Shift) -->
+                            <Border x:Name="TabConvertBorder"
+                                    Height="32"
+                                    Background="#7C5CFF"
+                                    CornerRadius="10"
+                                    Padding="12,0"
+                                    Margin="0,0,4,0"
+                                    Cursor="Hand"
+                                    MouseLeftButtonDown="TabConvert_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="TabConvertText"
+                                               Text="Конвертація"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Foreground="#FFFFFF"
+                                               VerticalAlignment="Center" />
+                                    <Border x:Name="TabConvertKeyBadge"
+                                            Height="19"
+                                            Background="#38101018"
+                                            BorderBrush="#55FFFFFF"
+                                            BorderThickness="1"
+                                            CornerRadius="5"
+                                            Padding="6,0"
+                                            Margin="7,0,0,0"
+                                            VerticalAlignment="Center">
+                                        <TextBlock x:Name="TabConvertKeyText"
+                                                   Text="Shift"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="#FFFFFF"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Режим 2: Інструменти (Ctrl) -->
+                            <Border x:Name="TabToolsBorder"
+                                    Height="32"
+                                    Background="Transparent"
+                                    CornerRadius="10"
+                                    Padding="12,0"
+                                    Margin="0,0,4,0"
+                                    Cursor="Hand"
+                                    MouseLeftButtonDown="TabTools_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="TabToolsText"
+                                               Text="Інструменти"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="#A0A3B5"
+                                               VerticalAlignment="Center" />
+                                    <Border x:Name="TabToolsKeyBadge"
+                                            Height="19"
+                                            Background="#262636"
+                                            BorderBrush="#3E3E52"
+                                            BorderThickness="1"
+                                            CornerRadius="5"
+                                            Padding="6,0"
+                                            Margin="7,0,0,0"
+                                            VerticalAlignment="Center">
+                                        <TextBlock x:Name="TabToolsKeyText"
+                                                   Text="Ctrl"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="#94A3B8"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Режим 3: Дії (Alt) -->
+                            <Border x:Name="TabActionsBorder"
+                                    Height="32"
+                                    Background="Transparent"
+                                    CornerRadius="10"
+                                    Padding="12,0"
+                                    Cursor="Hand"
+                                    MouseLeftButtonDown="TabActions_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="TabActionsText"
+                                               Text="Дії"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="#A0A3B5"
+                                               VerticalAlignment="Center" />
+                                    <Border x:Name="TabActionsKeyBadge"
+                                            Height="19"
+                                            Background="#262636"
+                                            BorderBrush="#3E3E52"
+                                            BorderThickness="1"
+                                            CornerRadius="5"
+                                            Padding="6,0"
+                                            Margin="7,0,0,0"
+                                            VerticalAlignment="Center">
+                                        <TextBlock x:Name="TabActionsKeyText"
+                                                   Text="Alt"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="#94A3B8"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
                 <!-- Фонове кільце-ореол Orbit (Ambient Ring) -->
                 <Ellipse x:Name="AmbientBackdropRing"
@@ -83,7 +207,7 @@
                 <!-- Контейнер секторів -->
                 <Canvas x:Name="SectorsHost" />
 
-                <!-- Центральне ядро Orbit (Без Effect на контейнері тексту!) -->
+                <!-- Центральне ядро Orbit -->
                 <Grid x:Name="CenterHub"
                       Cursor="Hand"
                       MouseDown="CenterHub_MouseDown">
@@ -97,28 +221,31 @@
                     <Border CornerRadius="100"
                             Background="#17171C"
                             BorderBrush="{StaticResource OrbitLogoGradient}"
-                            BorderThickness="2.5">
-                        <Grid Margin="10">
+                            BorderThickness="2.5"
+                            ClipToBounds="True">
+                        <Grid Margin="8,6">
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock x:Name="CenterFileIcon"
                                            Text="◎"
-                                           FontSize="24"
+                                           FontSize="22"
                                            Foreground="#A78BFA"
                                            HorizontalAlignment="Center"
-                                           Margin="0,0,0,3" />
+                                           TextAlignment="Center"
+                                           Margin="0,0,0,2" />
                                 <TextBlock x:Name="CenterFileName"
                                            Text="Halo"
-                                           FontSize="12"
+                                           FontSize="11.5"
                                            FontWeight="Bold"
                                            Foreground="#F2F3F7"
-                                           MaxWidth="96"
+                                           MaxWidth="88"
                                            TextAlignment="Center"
+                                           HorizontalAlignment="Center"
                                            TextTrimming="CharacterEllipsis" />
                                 <TextBlock x:Name="CenterFileInfo"
                                            Text="Оберіть сектор"
-                                           FontSize="10"
+                                           FontSize="9.5"
                                            Foreground="#A0A3B5"
-                                           MaxWidth="96"
+                                           MaxWidth="84"
                                            TextAlignment="Center"
                                            TextTrimming="CharacterEllipsis"
                                            HorizontalAlignment="Center"
@@ -128,21 +255,29 @@
                     </Border>
                 </Grid>
 
-                <!-- Нижня інформаційна картка-підказка Orbit під круговим меню -->
-                <Border x:Name="BottomHintPill"
-                        Background="#F224242E"
-                        BorderBrush="#3E3E52"
-                        BorderThickness="1"
-                        CornerRadius="11"
-                        Padding="14,7"
-                        IsHitTestVisible="False">
-                    <TextBlock x:Name="BottomHintText"
-                               Text="Наведіть курсор на сектор або перетягніть файл"
-                               FontSize="12"
-                               FontWeight="Medium"
-                               Foreground="#A0A3B5"
-                               TextAlignment="Center" />
-                </Border>
+                <!-- Фіксований центрований контейнер для нижньої підказки (Hover-текст завжди строго по центру кола!) -->
+                <Grid x:Name="BottomHintContainer"
+                      Width="760"
+                      IsHitTestVisible="False">
+                    <Border x:Name="BottomHintPill"
+                            HorizontalAlignment="Center"
+                            MaxWidth="720"
+                            Background="#F224242E"
+                            BorderBrush="#3E3E52"
+                            BorderThickness="1"
+                            CornerRadius="11"
+                            Padding="16,7">
+                        <TextBlock x:Name="BottomHintText"
+                                   Text="Shift: Конвертація • Ctrl: Інструменти • Alt: Дії"
+                                   FontSize="12"
+                                   FontWeight="Medium"
+                                   Foreground="#A0A3B5"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="688" />
+                    </Border>
+                </Grid>
             </Canvas>
         </Canvas>
     </Grid>

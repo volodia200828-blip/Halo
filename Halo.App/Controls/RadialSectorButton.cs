@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,6 +11,9 @@ namespace Halo.App.Controls;
 
 public class RadialSectorButton : Canvas
 {
+    private static readonly FontFamily FormatBadgeFont = new("Bahnschrift, Segoe UI Variable Display, Segoe UI");
+
+    private readonly Path _hitSlicePath;
     private readonly Path _slicePath;
     private readonly Path _accentArcPath;
     private readonly StackPanel _labelPanel;
@@ -21,9 +25,13 @@ public class RadialSectorButton : Canvas
     private readonly double _baseOuterRadius;
     private readonly double _startAngle;
     private readonly double _endAngle;
+    private readonly double _hitStart;
+    private readonly double _hitEnd;
     private readonly ActionItem _action;
     private readonly bool _showLabels;
     private readonly int _totalSectors;
+    private readonly Color _baseAccent;
+    private readonly bool _isTextFormatBadge;
 
     public event Action<ActionItem>? ActionTriggered;
     public event Action<ActionItem?>? SectorHovered;
@@ -38,7 +46,8 @@ public class RadialSectorButton : Canvas
         double endAngle,
         ActionItem action,
         bool showLabels = true,
-        int totalSectors = 6)
+        int totalSectors = 6,
+        double gapDeg = 0)
     {
         _center = center;
         _innerRadius = innerRadius;
@@ -48,6 +57,12 @@ public class RadialSectorButton : Canvas
         _action = action;
         _showLabels = showLabels;
         _totalSectors = totalSectors;
+        _baseAccent = ParseAccentColor(_action.AccentColor);
+        _isTextFormatBadge = _action.Category == ActionCategory.Convert || IsAsciiFormatBadge(_action.IconKey);
+
+        double halfGap = gapDeg / 2.0;
+        _hitStart = startAngle - halfGap;
+        _hitEnd = endAngle + halfGap;
 
         UseLayoutRounding = true;
         SnapsToDevicePixels = true;
@@ -55,10 +70,20 @@ public class RadialSectorButton : Canvas
         Width = center.X * 2;
         Height = center.Y * 2;
 
+        // Gapless hit-test geometry bridges the gap between visual sectors so mouse never leaves sectors during transition
+        _hitSlicePath = new Path
+        {
+            Fill = Brushes.Transparent,
+            Stroke = null,
+            IsHitTestVisible = true,
+            Data = RadialGeometryHelper.CreatePieSlice(_center, _innerRadius, _baseOuterRadius + 12, _hitStart, _hitEnd)
+        };
+
         _slicePath = new Path
         {
             StrokeThickness = 1.4,
-            SnapsToDevicePixels = true
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false
         };
 
         _accentArcPath = new Path
@@ -71,6 +96,7 @@ public class RadialSectorButton : Canvas
         _slicePath.Data = RadialGeometryHelper.CreatePieSlice(_center, _innerRadius, _baseOuterRadius, _startAngle, _endAngle);
         _accentArcPath.Data = RadialGeometryHelper.CreatePieSlice(_center, _innerRadius + 1, _innerRadius + 5.5, _startAngle + 1.5, _endAngle - 1.5);
 
+        Children.Add(_hitSlicePath);
         Children.Add(_slicePath);
         Children.Add(_accentArcPath);
 
@@ -79,22 +105,30 @@ public class RadialSectorButton : Canvas
         _iconBlock = new TextBlock
         {
             Text = _action.IconKey,
-            FontSize = compactMode ? 19 : 22,
+            FontSize = GetIconFontSize(_action.IconKey, _isTextFormatBadge, compactMode),
+            Foreground = new SolidColorBrush(_baseAccent),
             HorizontalAlignment = HorizontalAlignment.Center,
             TextAlignment = TextAlignment.Center
         };
 
+        if (_isTextFormatBadge)
+        {
+            _iconBlock.FontFamily = FormatBadgeFont;
+            _iconBlock.FontWeight = FontWeights.ExtraBold;
+        }
+
         _titleBlock = new TextBlock
         {
             Text = _action.Title,
-            FontSize = compactMode ? 9.5 : 11,
+            FontSize = compactMode ? 9.5 : 10.5,
             FontWeight = FontWeights.SemiBold,
-            Foreground = new SolidColorBrush(Color.FromRgb(242, 243, 247)),
+            Foreground = new SolidColorBrush(_baseAccent),
             HorizontalAlignment = HorizontalAlignment.Center,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0),
-            Visibility = (_showLabels && _totalSectors <= 9) ? Visibility.Visible : Visibility.Collapsed,
-            MaxWidth = compactMode ? 54 : 76,
+            // Do not repeat a subtitle underneath text format badges (e.g., JPG, PNG, DOCX)
+            Visibility = (!_isTextFormatBadge && _showLabels && _totalSectors <= 9) ? Visibility.Visible : Visibility.Collapsed,
+            MaxWidth = compactMode ? 56 : 76,
             TextTrimming = TextTrimming.CharacterEllipsis
         };
 
@@ -113,9 +147,41 @@ public class RadialSectorButton : Canvas
         MouseLeftButtonDown += OnClickSector;
     }
 
+    public static bool IsAsciiFormatBadge(string? iconKey)
+    {
+        if (string.IsNullOrWhiteSpace(iconKey)) return false;
+        return iconKey.All(c => (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.');
+    }
+
+    private static double GetIconFontSize(string? iconKey, bool isTextFormat, bool compactMode)
+    {
+        if (!isTextFormat)
+            return compactMode ? 19 : 22;
+
+        int len = iconKey?.Length ?? 3;
+        if (len >= 6) return compactMode ? 11.5 : 13.0;
+        if (len >= 5) return compactMode ? 12.5 : 14.5;
+        if (len == 4) return compactMode ? 14.0 : 16.0;
+        return compactMode ? 16.0 : 18.5;
+    }
+
+    private static Color ParseAccentColor(string? hex)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(hex))
+                return (Color)ColorConverter.ConvertFromString(hex);
+        }
+        catch
+        {
+            // Fallback below
+        }
+        return Color.FromRgb(139, 92, 246);
+    }
+
     private void UpdateLabelPosition(double outerRadius)
     {
-        // Bias radial midpoint slightly outward (57%) where the wedge is wider so labels never overlap
+        // Bias radial midpoint slightly outward where the wedge is wider so labels never overlap
         double biasedInner = _innerRadius + (outerRadius - _innerRadius) * 0.14;
         var mid = RadialGeometryHelper.GetRadialMidpoint(_center, biasedInner, outerRadius, _startAngle, _endAngle);
 
@@ -129,26 +195,16 @@ public class RadialSectorButton : Canvas
 
     private void UpdateSectorBrush(bool isHovered)
     {
-        Color baseAccent;
-        try
-        {
-            baseAccent = (Color)ColorConverter.ConvertFromString(_action.AccentColor);
-        }
-        catch
-        {
-            baseAccent = Color.FromRgb(139, 92, 246);
-        }
-
-        _accentArcPath.Fill = new SolidColorBrush(Color.FromArgb(isHovered ? (byte)255 : (byte)190, baseAccent.R, baseAccent.G, baseAccent.B));
+        _accentArcPath.Fill = new SolidColorBrush(Color.FromArgb(isHovered ? (byte)255 : (byte)205, _baseAccent.R, _baseAccent.G, _baseAccent.B));
 
         if (isHovered)
         {
             // Orbit active gradient blended with sector accent
             _slicePath.Fill = new LinearGradientBrush(
-                Color.FromArgb(245, (byte)((54 + baseAccent.R) / 2), (byte)((43 + baseAccent.G) / 2), (byte)((89 + baseAccent.B) / 2)),
+                Color.FromArgb(245, (byte)((54 + _baseAccent.R) / 2), (byte)((43 + _baseAccent.G) / 2), (byte)((89 + _baseAccent.B) / 2)),
                 Color.FromArgb(245, 37, 36, 61),
                 45);
-            _slicePath.Stroke = new SolidColorBrush(Color.FromRgb(196, 181, 253));
+            _slicePath.Stroke = new SolidColorBrush(_baseAccent);
             _slicePath.StrokeThickness = 2.0;
         }
         else
@@ -166,6 +222,10 @@ public class RadialSectorButton : Canvas
     private void OnMouseEnterSector(object sender, MouseEventArgs e)
     {
         UpdateSectorBrush(true);
+        if (_iconBlock != null)
+        {
+            _iconBlock.Foreground = Brushes.White;
+        }
         if (_titleBlock != null)
         {
             _titleBlock.Foreground = Brushes.White;
@@ -177,9 +237,13 @@ public class RadialSectorButton : Canvas
     private void OnMouseLeaveSector(object sender, MouseEventArgs e)
     {
         UpdateSectorBrush(false);
+        if (_iconBlock != null)
+        {
+            _iconBlock.Foreground = new SolidColorBrush(_baseAccent);
+        }
         if (_titleBlock != null)
         {
-            _titleBlock.Foreground = new SolidColorBrush(Color.FromRgb(242, 243, 247));
+            _titleBlock.Foreground = new SolidColorBrush(_baseAccent);
         }
         AnimateOuterRadius(_baseOuterRadius);
         SectorHovered?.Invoke(null);
@@ -188,6 +252,7 @@ public class RadialSectorButton : Canvas
     private void AnimateOuterRadius(double targetRadius)
     {
         _slicePath.Data = RadialGeometryHelper.CreatePieSlice(_center, _innerRadius, targetRadius, _startAngle, _endAngle);
+        _hitSlicePath.Data = RadialGeometryHelper.CreatePieSlice(_center, _innerRadius, targetRadius + 12, _hitStart, _hitEnd);
         UpdateLabelPosition(targetRadius);
     }
 

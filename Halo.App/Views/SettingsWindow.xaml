@@ -49,12 +49,12 @@
                             <Grid Width="44" Height="24">
                                 <Border x:Name="Track"
                                         CornerRadius="12"
-                                        Background="#334155"
-                                        BorderBrush="#475569"
-                                        BorderThickness="1" />
+                                        Background="{DynamicResource OrbitToggleTrackOffBrush}"
+                                        BorderBrush="{DynamicResource OrbitToggleBorderOffBrush}"
+                                        BorderThickness="1.2" />
                                 <Ellipse x:Name="Thumb"
                                          Width="18" Height="18"
-                                         Fill="#94A3B8"
+                                         Fill="{DynamicResource OrbitToggleThumbOffBrush}"
                                          HorizontalAlignment="Left"
                                          Margin="3,0,0,0" />
                             </Grid>
@@ -293,10 +293,11 @@
                             <StackPanel>
                                 <!-- Theme Selection -->
                                 <TextBlock Text="Тема оформлення:" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8" />
-                                <ComboBox x:Name="ThemeCombo" Width="200" HorizontalAlignment="Left" Background="#0F172A" Foreground="Black"
+                                <ComboBox x:Name="ThemeCombo" Width="200" HorizontalAlignment="Left"
                                           SelectionChanged="ThemeCombo_SelectionChanged" SelectedIndex="0">
-                                    <ComboBoxItem Content="Темна тема" />
-                                    <ComboBoxItem Content="Світла тема" />
+                                    <ComboBoxItem Content="Темна" />
+                                    <ComboBoxItem Content="Глибоко-синя" />
+                                    <ComboBoxItem Content="Світла" />
                                 </ComboBox>
 
                                 <Separator Background="#334155" Margin="0,18" />
@@ -391,10 +392,10 @@
                         <TextBox x:Name="NewFolderInput" Text="C:\Users\...\Downloads" Background="#0F172A" Foreground="White"
                                  Padding="10,8" Margin="0,0,10,0" BorderBrush="#334155" />
                         <ComboBox x:Name="NewFolderActionCombo" Grid.Column="1" Background="#0F172A" Foreground="Black" Margin="0,0,10,0" SelectedIndex="0">
-                            <ComboBoxItem Content="Конвертувати у WebP" Tag="image_to_webp" />
+                            <ComboBoxItem Content="Стиснути у ZIP" Tag="compress_to_zip" />
                             <ComboBoxItem Content="Конвертувати у PNG" Tag="image_to_png" />
                             <ComboBoxItem Content="Стиснути зображення" Tag="image_compress" />
-                            <ComboBoxItem Content="Чорно-білий фільтр" Tag="image_grayscale" />
+                            <ComboBoxItem Content="Повернути на 90°" Tag="image_rotate_90" />
                         </ComboBox>
                         <Button Grid.Column="2" Content="Додати правило" Click="BtnAddWatchedFolder_Click" Background="#0284C7" BorderBrush="#38BDF8" />
                     </Grid>
